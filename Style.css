@@ -1,0 +1,22 @@
+.label {}
+.axis {
+	margin: 20pt;
+	padding: 40pt;
+}
+.axis path, .axis line {
+    fill: none;
+    stroke: #333;
+}
+.axis .grid-line {
+    stroke: #000;
+    shape-rendering: crispedges;
+    stroke-opacity: 0.2;
+}
+.axis text {
+    font: 10px Verdana;
+	text-anchor:end;
+}
+.dot {
+    stroke: steelblue;
+    fill: lightblue;
+}

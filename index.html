@@ -1,0 +1,126 @@
+<html>
+<head>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+<script type="text/javascript" src="number.json"></script>
+<script src="http://d3js.org/d3.v3.min.js"> </script> 
+<link rel=stylesheet href="Style.css" type="text/css"> 
+</head>
+<body>
+<div id="app">
+    <ul>    
+    </ul>
+</div>   
+<script>
+
+//считали json (локально)
+var rawData = JSON.parse(data);
+//работаем с vue
+var App = new Vue({
+  el: '#app',
+  data: {rawData}
+     });  	 
+
+//строим гистограмму на  d3js
+var height = 500, 
+    width = 1000, 
+    margin=30;
+     
+// функция для получения цветов
+var color = d3.scale.category10();
+ 
+// длина оси X= ширина контейнера svg - отступ слева и справа
+var xAxisLength = width - 2 * margin;     
+  
+// длина оси Y = высота контейнера svg - отступ сверху и снизу
+var yAxisLength = height - 2 * margin;
+ 
+// функция интерполяции значений на ось X
+var xScale = d3.scale.ordinal()
+        .rangeRoundBands([0, xAxisLength + margin], .1)
+        .domain(rawData.map(function(d) { return d.name; }));
+ 
+// функция интерполяции значений на ось Y
+var yScale = d3.scale.linear()
+    .domain([   
+            d3.min(rawData, function(d) { return d.score - 10; }),
+            d3.max(rawData, function(d) { return d.score + 10; })
+    ]).range([yAxisLength, 0]);
+ 
+var svg = d3.select("body").append("svg")
+        .attr("class", "axis")
+        .attr("width", width)
+        .attr("height", height);
+ 
+// создаем ось X   
+var xAxis = d3.svg.axis()
+            .scale(xScale)
+            .orient("bottom");
+// создаем ось Y             
+var yAxis = d3.svg.axis()
+             .scale(yScale)
+             .orient("left");
+              
+ // отрисовка оси Х             
+svg.append("g")       
+     .attr("class", "x-axis")
+     .attr("transform",
+         "translate(" + margin + "," + (height - margin) + ")")
+    .call(xAxis);
+ 
+ // отрисовка оси Y 
+svg.append("g")       
+    .attr("class", "y-axis")
+    .attr("transform",
+            "translate(" + margin + "," + margin + ")")
+    .call(yAxis);
+	
+	//рисуем название
+svg.append("text")
+    .attr("x", (width / 2))
+    .attr("y", margin - 10 )
+    .attr("text-anchor", "middle")
+    .style("font-size", "22px")
+    .text("Crimes in Nothgate for 2014");
+	
+//рисуем подписи осей
+//y
+svg.append("text")
+    .attr("x", margin + 11)
+    .attr("y", margin - 11)
+    .attr("text-anchor", "end")
+    .style("font-size", "11px")
+    .text("Count of crimes");
+ //x
+svg.append("text")
+    .attr("x", width - margin + 11)
+    .attr("y", height - margin + 50)
+    .attr("text-anchor", "end")
+    .style("font-size", "11px")
+	.text("Type of crime");
+
+// рисуем горизонтальные линии 
+d3.selectAll("g.y-axis g.tick")
+    .append("line")
+    .classed("grid-line", true)
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", xAxisLength)
+    .attr("y2", 0);
+
+ 
+// создаем элемент g с набором столбиков
+svg.append("g")
+    .attr("transform",  // сдвиг оси вправо
+         "translate(" + margin + ", 0)")
+    .selectAll(".bar", ".dot")
+    .data(rawData)
+    .enter().append("rect")
+    .attr("class", "bar")
+    .attr("x", function(d) { return xScale(d.name); })
+    .attr("width", xScale.rangeBand())
+    .attr("y", function(d) { return yScale(d.score); })
+    .attr("height", function(d) { return height - yScale(d.score) - 30; })
+    .attr("fill", function(d) { return color(d.name); })
+</script>           
+</body>
+</html>  
