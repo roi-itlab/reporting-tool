@@ -58,6 +58,7 @@
 <script>
 import * as d3 from 'd3'
 import dataset from './dataset'
+import '../../server/index.js'
 
 export default {
   data () {
