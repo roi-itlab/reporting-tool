@@ -1,0 +1,17 @@
+{
+  "colors": {
+    "axis": "green",
+    "circles": "green"
+  },
+  "size": {
+    "strokeWidth": "2",
+    "circleR": "3",
+    "subStrokeWidth": "6"
+  },
+  "filters": {
+    "axisX": "y",
+    "axisY": "x",
+    "axisZ": "",
+    "axisA": ""
+  }
+}

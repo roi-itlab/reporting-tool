@@ -8,5 +8,8 @@ export default {
   },
   fetchXml () {
     return api().get('xml')
+  },
+  fetchQuery () {
+    return api().get('?config=rs_config.json')
   }
 }
