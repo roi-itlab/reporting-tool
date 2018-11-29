@@ -1,15 +1,16 @@
 <template>
-  <LineChart></LineChart>
+  <LineCh
+  v-bind:circlesRad="3"></LineCh>
 </template>
 <script>
 /* eslint-disable no-unused-vars */
 /* eslint-disable */
 import * as d3 from 'd3'
 import PostsService from '@/services/PostsService'
-import LineChart from './LineChart'
+import LineCh from './LineCh'
 var zoom
 export default {
-  components: {LineChart},
+  components: {LineCh},
   data () {
     return {
       dataBase: [],
