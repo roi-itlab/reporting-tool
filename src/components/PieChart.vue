@@ -5,7 +5,6 @@
 <script>
 import PostsService from '@/services/PostsService';
 import * as d3 from 'd3';
-import PieConfig from '@/PieChart.json';
 
 export default {
   name: 'pie-chart',
@@ -25,8 +24,7 @@ export default {
       sectors: [],
       colors: [],
       svgViewBox: '-1 -1 2 2',
-      svgStyle: 'transform: rotate(-0.25turn)',
-      PieConfig
+      svgStyle: 'transform: rotate(-0.25turn)'
     }
   },
   methods: {
