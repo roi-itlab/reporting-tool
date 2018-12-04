@@ -1,12 +1,16 @@
 <template>
   <div id="app">
-    <router-view/>
+    <h1>Reporting Tool</h1>
+    <pie-chart :svgSize="450" :donutRatio="0.23" :grouping="true" :groupingThreshold="5" valueKey="avg_spawns" labelKey="name"></pie-chart>
   </div>
 </template>
 
 <script>
+import PieChart from './components/PieChart'
+
 export default {
-  name: 'App'
+  name: 'app',
+  components: {PieChart}
 }
 </script>
 

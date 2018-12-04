@@ -1,36 +1,22 @@
 <template>
-    <div>
-      <button v-on:click="getQuery()">Query</button>
-      <svg :height="getSize"
-        viewBox="-1 -1 2 2" 
-        style="transform: rotate(-0.25turn)">
-        <defs>
-          <mask id="hole">
-            <circle r="1" cx="0" cy="0" fill="white"/>
-            <circle :r="getDonutRatios" cx="0" cy="0" fill="black"/>
-          </mask>
-        </defs>
-        <path mask="url(#hole)" 
-          v-for = "(item, index) in items"
-            :fill = "getSectorColor(index)"
-            :d = "getSectorPath(item[PieConfig.keys.value], index)"/>
-      </svg>
-      <ul>
-        <li v-for = "(value, index) in colors">
-          {{labels[index] + " (" + sectors[index].pct + "%)"}}
-          <svg width="15" height="15">
-            <rect width="15" height="15" :fill="value"/>
-          </svg>
-        </li>
-      </ul>
-    </div>
+    <div></div>
 </template>
 
 <script>
-import PostsService from '@/services/PostsService'
-import PieConfig from '@/PieChart.json'
+import PostsService from '@/services/PostsService';
+import * as d3 from 'd3';
+import PieConfig from '@/PieChart.json';
 
 export default {
+  name: 'pie-chart',
+  props: {
+    svgSize: Number, 
+    donutRatio: Number, 
+    grouping: Boolean, 
+    groupingThreshold: Number, 
+    valueKey: String, 
+    labelKey: String
+  },
   data () {
     return {
       sum: 0,
@@ -38,22 +24,109 @@ export default {
       labels: [],
       sectors: [],
       colors: [],
+      svgViewBox: '-1 -1 2 2',
+      svgStyle: 'transform: rotate(-0.25turn)',
       PieConfig
     }
   },
   methods: {
     async getQuery() {
       const response = await PostsService.fetchQuery();
-      this.items = response.data[0];
-      this.sectors[this.items.length] = {};
-
-      if (!this.sum) {
-        for (let i = 0; i < this.items.length; i++) {
-          this.sum += Number(this.items[i][PieConfig.keys.value]);
-          this.labels[i] = this.items[i][PieConfig.keys.label];
-          this.colors[i] = this.getRandomColor();
+      return response;
+    },
+    updateData() {
+      this.getQuery().then(response => {
+        this.items = response.data[0];
+        this.sectors[this.items.length] = {};
+        
+        if (!this.sum) {
+          for (let i = 0; i < this.items.length; i++) {
+            this.sum += Number(this.items[i][this.getValueKey]);
+            this.labels[i] = this.items[i][this.getLabelKey];
+            this.colors[i] = this.getRandomColor();
+          }
         }
-      }
+
+        this.createSVG();
+      })
+    },
+    createSVG() {
+      var text = "";
+
+      var width = this.getSize;
+      var height = this.getSize;
+
+      var radius = Math.min(width, height) / 2;
+      var thickness = 60;
+      var color = d3.scaleOrdinal(d3.schemeSet1);
+
+      var svg = d3.select(this.$el)
+      .append('svg')
+      .attr('class', 'pie')
+      .attr('width', width)
+      .attr('height', height);
+
+      var g = svg.append('g')
+      .attr('transform', 'translate(' + (width/2) + ',' + (height/2) + ')');
+
+      var arc = d3.arc()
+      .innerRadius(radius - thickness)
+      .outerRadius(radius);
+
+      var pie = d3.pie()
+      .value(d => d[this.getValueKey()])
+      .sort(null);
+
+      var path = g.selectAll('path')
+      .data(pie(this.items))
+      .enter()
+      .append("g")
+      .attr("id", (d, i) => "sector" + i)
+      .on("mouseover", (d, i) => {
+            let g = d3.select("#sector" + i)
+              .style("cursor", "pointer")
+              .style("fill", "black")
+              .append("g")
+              .attr("class", "text-group");
+       
+            g.append("text")
+              .attr("class", "name-text")
+              .text(`${d.data[this.getLabelKey()]}`)
+              .attr('text-anchor', 'middle')
+              .attr('dy', '-1.2em');
+        
+            g.append("text")
+              .attr("class", "value-text")
+              .text(`${d.data[this.getValueKey()]}`)
+              .attr('text-anchor', 'middle')
+              .attr('dy', '.6em');
+          })
+        .on("mouseout", function(d) {
+            d3.select(this)
+              .style("cursor", "none")  
+              .style("fill", color(this._current))
+              .select(".text-group").remove();
+          })
+        .append('path')
+        .attr('d', arc)
+        .attr('fill', (d,i) => color(i))
+        .attr('opacity', '1')
+        .on("mouseover", function(d) {
+            d3.select(this)     
+              .style("cursor", "pointer")
+              .attr("opacity", "0.7");
+          })
+        .on("mouseout", function(d) {
+            d3.select(this)
+              .style("cursor", "none")  
+              .attr("opacity", "1");
+          })
+        .each(function(d, i) { this._current = i; });
+
+      g.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '.35em')
+        .text(text);
     },
     getRandomColor() {
       let color = ['#', 
@@ -101,14 +174,32 @@ export default {
     },
     getSectorColor(index) {
       return this.colors[index];
+    },
+    getValueKey() {
+      return this.valueKey;
+    },
+    getLabelKey() {
+      return this.labelKey;
     }
   },
+  created() {
+    this.updateData();
+  },
   computed: {
-    getDonutRatios() {
-      return PieConfig.size.donutRatios;
+    getDonutRatio() {
+      return this.donutRatio;
     },
     getSize() {
-      return PieConfig.size.svgSize;
+      return this.svgSize;
+    },
+    getGrouping() {
+      return this.grouping;
+    },
+    getGroupingThreshold() {
+      return this.groupingThreshold;
+    },
+    getItems() {
+      return this.items;
     }
   }
 }

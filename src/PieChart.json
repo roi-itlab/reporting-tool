@@ -1,7 +1,10 @@
 {
   "size": {
     "svgSize": "450px",
-    "donutRatios": "0.75"
+    "donutRatios": "0.33"
+  },
+  "grouping": {
+    "threshold": "5"
   },
   "keys": {
     "value": "avg_spawns",
