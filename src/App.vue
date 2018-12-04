@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <h1>Reporting Tool</h1>
-    <pie-chart :svgSize="450" :donutRatio="0.23" :grouping="true" :groupingThreshold="5" valueKey="avg_spawns" labelKey="name"></pie-chart>
+    <pie-chart :svgSize="450" :donutRatio="0.23" :grouping="true" :groupingThreshold="5" valueKey="avg_spawns" labelKey="name" config="configs/pie_config_2.json"></pie-chart>
   </div>
 </template>
 

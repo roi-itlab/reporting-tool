@@ -14,7 +14,8 @@ export default {
     grouping: Boolean, 
     groupingThreshold: Number, 
     valueKey: String, 
-    labelKey: String
+    labelKey: String,
+    config: String
   },
   data () {
     return {
@@ -29,7 +30,7 @@ export default {
   },
   methods: {
     async getQuery() {
-      const response = await PostsService.fetchQuery();
+      const response = await PostsService.fetchQuery(this.config);
       return response;
     },
     updateData() {
