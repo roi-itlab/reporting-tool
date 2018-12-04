@@ -1,202 +1,305 @@
 <template>
-    <div>
-      <button v-on:click="getQuery()">Query</button>
-      <svg viewBox="0 0 600 600">
-        <line id = "axis-x"
-              v-if="x != 0"
-              :stroke-width="getAxisWidth"
-              :stroke="getAxisColor"
-              :x1 = "margin - getAxisWidth/2"
-              :y1 = "margin/2 + y"
-              :x2 = "margin + x + getAxisWidth/2"
-              :y2 = "margin/2 + y" />
-        <line id = "axis-y"
-              v-if="y != 0"
-              :stroke-width="getAxisWidth"
-              :stroke="getAxisColor"
-              :x1 = "margin"
-              :y1 = "margin/2"
-              :x2 = "margin"
-              :y2 = "margin/2 + y" />
-        <line v-if="x != 0 && getDashesVisible"
-              v-for="(value, index) in getDashesCountX"
-              :key = "iter + index"
-              :stroke-width="getDashesWidth"
-              :stroke = "getDashesColor"
-              :x1 = "margin + ( index + 1 ) * deltaX"
-              :y1 = "margin/2 + y - getDashesHeight"
-              :x2 = "margin + ( index + 1 ) * deltaX"
-              :y2 = "margin/2 + y + getDashesHeight"/>
-        <line v-if="y != 0 && getDashesVisible"
-              v-for="(value, index) in getDashesCountY"
-              :key = "iter + index"
-              :stroke-width="getDashesWidth"
-              :stroke = "getDashesColor"
-              :x1 = "margin - getDashesHeight"
-              :y1 = "margin/2 + y - ( index + 1 ) * deltaY"
-              :x2 = "margin + getDashesHeight"
-              :y2 = "margin/2 + y -( index + 1 ) * deltaY"/>
-        <text v-if="x != 0 && getSymbolXVisible"
-              v-for="(value, index) in getDashesCountX"
-              :key = "iter + index"
-              :font-size = "getSymbolXSize"
-              v-bind:fill="getSymbolXColor"
-              :x = "margin + ( index + 1 ) * deltaX"
-              :y = "margin/2 + y + getSymbolXSize + getDashesHeight + 1"
-              text-anchor="middle"
-        > {{ (maxX / getDashesCountX * ( index + 1 )).toFixed(1) }} </text>
-        <text v-if="y != 0 && getSymbolYVisible"
-              v-for="(value, index) in getDashesCountY"
-              :key = "iter + index"
-              :font-size = "getSymbolYSize"
-              v-bind:fill="getSymbolYColor"
-              :x = "margin - getSymbolYSize - getDashesHeight - 1"
-              :y = "margin/2 + y - ( index + 1 ) * deltaY + getSymbolYSize/3"
-              text-anchor="middle"
-        > {{ (maxY / getDashesCountY * ( index + 1 )).toFixed(1) }} </text>
-        <path v-if="getLineVisible"
-        fill="none"
-        :stroke="getLineColor"
-        :stroke-width = "getLineWidth"
-        :d="line"/>
-        <circle v-if="x != 0 && getCircleVisible"
-                v-for="(value, index) in data"
-                :key = "iter + index"
-                v-bind:fill="getCircleColor"
-                :r = "getCircleRadius"
-                :cx = "margin + ( ( x - margin) / maxX) * (value[LineConfig.filters.axisX])"
-                :cy = "(margin/2 + y) - ( (y - deltaY) / maxY) * (value[LineConfig.filters.axisY])"/>
-      </svg>
-    </div>
+    <div id="lineChart"></div>
 </template>
+
 <script>
-/* eslint-disable */
 import PostsService from '@/services/PostsService'
-import LineConfig from '@/LineChart.json'
 import * as d3 from 'd3'
+import Legend from './Legend'
 export default {
-  props: ['www'],
-  data () {
-    return {
-      eee: this.www,
-      iter: 0,
-      name: 'LineChart',
-      x: 0,
-      y: 0,
-      svgSize: 600,
-      margin: 50,
-      xMaxLength: 500,
-      yMaxLength: 200,
-      deltaX: 0,
-      deltaY: 0,
-      data: [],
-      maxX: 0,
-      maxY: 0,
-      LineConfig
+  components: {Legend},
+  props: {
+    backgroundColor: {
+      default: 'Gainsboro',
+      type: String
+    },
+    width: {
+      default: 800,
+      type: Number
+    },
+    height: {
+      default: 300,
+      type: Number
+    },
+    margin: {
+      default: function () {
+        return { left: 50, right: 50, top: 50, bottom: 50 }
+      },
+      type: Object
+    },
+    symbolXColor: {
+      default: 'black',
+      type: String
+    },
+    symbolYColor: {
+      default: 'black',
+      type: String
+    },
+    circlesRad: {
+      default: 5,
+      type: Number
+    },
+    circlesVis: {
+      default: true,
+      type: Boolean
+    },
+    circlesStrokeColor: {
+      default: 'white',
+      type: String
+    },
+    circlesFillColor: {
+      //default: 'blue',
+      default: function() {
+        return ['green', 'red', 'yellow']
+      },
+      type: Array
+    },
+    lineVis: {
+      default: true,
+      type: Boolean
+    },
+    lineColor: {
+      //default: 'lightskyblue',
+      default: function() {
+        return ['green', 'red', 'yellow']
+      },
+      type: Array
+    },
+    axisXColor: {
+      default: 'black',
+      type: String
+    },
+    axisYColor: {
+      default: 'black',
+      type: String
+    },
+    lineDepth: {
+      default: 2,
+      type: Number
+    },
+    axesDepth: {
+      default: 2,
+      type: Number
+    },
+    strokeXColor: {
+      default: 'black',
+      type: String
+    },
+    strokeYColor: {
+      default: 'black',
+      type: String
+    },
+    strokeYDepth: {
+      default: 1,
+      type: Number
+    },
+    strokeXDepth: {
+      default: 1,
+      type: Number
+    },
+    symbolXSize: {
+      default: 10,
+      type: Number
+    },
+    symbolYSize: {
+      default: 10,
+      type: Number
+    },
+    strokeXCount: {
+      default: 10,
+      type: Number
+    },
+    strokeYCount: {
+      default: 10,
+      type: Number
+    },
+    areaColor: {
+      default: 'royalblue',
+      type: String
+    },
+    areaVis: {
+      default: false,
+      type: Boolean
+    },
+    gridY: {
+      default: 20,
+      type: Number
+    },
+    gridX: {
+      default: 20,
+      type: Number
+    },
+    gridColor: {
+      // default: 'lavender',
+      default: 'grey',
+      type: String
+    },
+    gridVis: {
+      default: true,
+      type: Boolean
+    },
+    areaOpacity: {
+      default: 0.5,
+      type: Number
+    },
+    dataCount: {
+      default: 3,
+      type: Number
     }
+  },
+  name: 'LineChart',
+  mounted: function() {
+    this.createSvg()
   },
   methods: {
-    async getQuery() {
-      const response = await PostsService.fetchQuery()
-      this.x = this.xMaxLength;
-      this.y = this.yMaxLength;
-      this.deltaX = ( this.xMaxLength / ( LineConfig.dashes.countX + 1 ) )
-      this.deltaY = ( this.yMaxLength / ( LineConfig.dashes.countY + 1 ) )
-      this.iter += response.data[0].length
-      this.data = response.data[0]
-      this.maxY = response.data[0][0][LineConfig.filters.axisY]
-      this.maxX = response.data[0][0][LineConfig.filters.axisX]
-      for (var i in response.data[0]) {
-        if (response.data[0][i][LineConfig.filters.axisY] > this.maxY)
-          this.maxY = response.data[0][i][LineConfig.filters.axisY]
-        if (response.data[0][i][LineConfig.filters.axisX] > this.maxX)
-          this.maxX = response.data[0][i][LineConfig.filters.axisX]
+    createSvg(){
+      //function create X-grid
+      function make_x_gridlines(d) {
+        return d3.axisBottom(xScale)
+          .ticks(d)
       }
 
-      console.log(this.maxX + " " + this.maxY)
+      //function create Y-grid
+      function make_y_gridlines(d) {
+        return d3.axisLeft(yScale)
+          .ticks(d)
+      }
+
+      let xScale
+      let yScale
+      let line
+      let dataset = []
+      let svg
+      let area
+
+      xScale = d3.scaleLinear().domain([0, 20]).range([0, this.width])
+      yScale = d3.scaleLinear().domain([0, 1]).range([this.height, 0])
+
+      //draw line
+      line = d3.line()
+        .x(function(d, i) { return xScale(i); })
+        .y(function(d) { return yScale(d.y); })
+        .curve(d3.curveMonotoneX)
+
+      //draw area
+      if (this.areaVis) {
+        area = d3.area()
+          .x(function (d, i) {
+            return xScale(i);
+          })
+          .y1(function (d) {
+            return yScale(d.y);
+          })
+          .y0(this.height)
+          .curve(d3.curveMonotoneX)
+      }
+
+      for (let i = 0; i < this.dataCount; ++i)
+        dataset.push( d3.range(21).map(function(d) { return {"y": d3.randomUniform(1)() } }) )
+
+      svg = d3.select('#lineChart').append('svg')
+        .attr('width', this.width + this.margin.left + this.margin.right)
+        .attr('height', this.height + this.margin.top + this.margin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
 
 
+      svg.append('rect').attr('class', 'bg')
+        .attr('height', this.height)
+        .attr('width', this.width)
+        .attr('fill-opacity', 0.5)
+        .attr('fill', this.backgroundColor)
+        .attr("transform", () => {
+          return "translate(" + this.borderWidth + "," + this.borderWidth + ")"
+        })
+        .attr('stroke-width', this.borderWidth).attr('rx', 5).attr('ry', 5)
+
+
+      svg.append("g")
+        .attr("class", "x-axis")
+        .attr("transform", "translate(0," + this.height + ")")
+        .call(d3.axisBottom(xScale))
+
+      svg.append("g")
+        .attr("class", "y-axis")
+        .call(d3.axisLeft(yScale))
+
+      //draw grid
+      if (this.gridVis) {
+        svg.append("g")
+          .attr("class", "grid")
+          .attr("transform", "translate(0," + this.height + ")")
+          .call(make_x_gridlines(this.gridX)
+            .tickSize(-this.height)
+            .tickFormat(""))
+
+        svg.append("g")
+          .attr("class", "grid")
+          .call(make_y_gridlines(this.gridY)
+            .tickSize(-this.width)
+            .tickFormat("")
+          )
+      }
+
+      for (let i = 0; i < this.dataCount; ++i){
+        if (this.areaVis) {
+          svg.append("path")
+            .datum(dataset[i])
+            .attr("class", "area" + i)
+            .attr("fill", this.areaColor)
+            .attr("opacity", this.areaOpacity)
+            .attr("d", area)
+        }
+        if (this.lineVis) {
+          svg.append("path")
+            .datum(dataset[i])
+            .attr("class", "line" + i)
+            .attr("fill", "none")
+            .attr("stroke-width", this.lineDepth)
+            .attr("stroke", this.lineColor[i])
+            .attr("d", line)
+        }
+        if (this.circlesVis){
+          svg.selectAll(".dot" + i)
+            .data(dataset[i])
+            .enter().append("circle")
+            .attr("class", "dot" + i)
+            .attr("cx", function(d, i) { return xScale(i) })
+            .attr("cy", function(d) { return yScale(d.y) })
+            .attr("r", this.circlesRad)
+            .attr("fill", this.circlesFillColor[i])
+            .attr("stroke", this.circlesStrokeColor)
+            .on('mouseover', function () { this.setAttribute('r', +this.getAttribute('r') + 2)})
+            .on('mouseout', function () { this.setAttribute('r', +this.getAttribute('r') - 2)})
+        }
+      }
+
+      svg.select('.y-axis > path')
+        .attr('stroke', this.axisYColor)
+        .attr('stroke-width', this.axesDepth)
+
+      svg.select('.x-axis > path')
+        .attr('stroke', this.axisXColor)
+        .attr('stroke-width', this.axesDepth)
+
+      svg.selectAll('.x-axis > tick > line')
+        .attr('stroke', this.strokeXColor)
+        .attr('stroke-width', this.strokeXDepth)
+
+      svg.selectAll('.y-axis > .tick > line')
+        .attr('stroke', this.strokeYColor)
+        .attr('stroke-width', this.strokeYDepth)
+
+      svg.selectAll('.x-axis > .tick > text')
+        .attr('fill', this.symbolXColor)
+        .attr('font-size', this.symbolXSize)
+
+      svg.selectAll('.y-axis > .tick > text')
+        .attr('fill', this.symbolYColor)
+        .attr('font-size', this.symbolYSize)
+
+      svg.selectAll('.grid > .tick > line').attr("stroke", this.gridColor)
     }
   },
-  computed: {
-    getAxisColor() {
-      return LineConfig.axis.color
-    },
-    getAxisWidth() {
-      console.log(this.eee)
-      console.log(this.eee)
-      return LineConfig.axis.width
-    },
-    getCircleColor() {
-      return LineConfig.circle.color
-    },
-    getCircleRadius() {
-      return LineConfig.circle.radius
-    },
-    getCircleVisible() {
-      return LineConfig.circle.visible
-    },
-    getDashesCountX() {
-      return LineConfig.dashes.countX
-    },
-    getDashesCountY() {
-      return LineConfig.dashes.countY
-    },
-    getDashesWidth() {
-      return LineConfig.dashes.width
-    },
-    getDashesHeight() {
-      return LineConfig.dashes.height
-    },
-    getDashesColor() {
-      return LineConfig.dashes.color
-    },
-    getDashesVisible() {
-      return LineConfig.dashes.visible
-    },
-    getLineVisible() {
-      return LineConfig.line.visible
-    },
-    getLineType() {
-      return LineConfig.line.type
-    },
-    getLineColor() {
-      return LineConfig.line.color
-    },
-    getLineWidth() {
-      return LineConfig.line.width
-    },
-    getSymbolXVisible() {
-      return LineConfig.symbolX.visible
-    },
-    getSymbolXSize() {
-      return LineConfig.symbolX.size
-    },
-    getSymbolXColor() {
-      return LineConfig.symbolX.color
-    },
-    getSymbolYVisible() {
-      return LineConfig.symbolY.visible
-    },
-    getSymbolYSize() {
-      return LineConfig.symbolY.size
-    },
-    getSymbolYColor() {
-      return LineConfig.symbolY.color
-    },
-    lineGenerator () {
-       return d3.line()
-         .curve(d3.curveNatural)
-        .x(v => this.margin + ( ( this.x - this.margin) / this.maxX) * (v[LineConfig.filters.axisX]))
-        .y(v => (this.margin/2 + this.y) - ( (this.y - this.deltaY) / this.maxY) * (v[LineConfig.filters.axisY]))
-    },
-    line () {
-      return this.lineGenerator(this.data)
-    }
-  }
 }
 </script>
-
-<style scoped>
-
-</style>

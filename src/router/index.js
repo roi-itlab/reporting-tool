@@ -14,7 +14,7 @@ export default new Router({
     },
     {
       path: '/line',
-      name: 'LineCh',
+      name: 'LineChart',
       component: LineChart
     }
   ]
