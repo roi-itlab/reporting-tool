@@ -1,16 +1,28 @@
 <template>
   <div id="app">
     <h1>Reporting Tool</h1>
-    <pie-chart :svgSize="450" :donutRatio="0.23" :grouping="true" :groupingThreshold="5" valueKey="avg_spawns" labelKey="name" config="configs/pie_config_2.json"></pie-chart>
+    <Legend></Legend>
+    <piechart 
+      :outerRadius='250' 
+      :innerRadius='0'
+      :arcPadding='50' 
+      :grouping='true' 
+      :groupingThreshold='5' 
+      :colorscheme='["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"]'
+      :valueKey='"avg_spawns"'
+      :labelKey='"name"'
+      :config='"configs/pie_config_2.json"'
+    ></piechart>
   </div>
 </template>
 
 <script>
-import PieChart from './components/PieChart'
+import piechart from './components/PieChart'
+import Legend from './components/Legend'
 
 export default {
   name: 'app',
-  components: {PieChart}
+  components: {piechart, Legend}
 }
 </script>
 

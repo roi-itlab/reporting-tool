@@ -5,14 +5,18 @@
 <script>
 import PostsService from '@/services/PostsService';
 import * as d3 from 'd3';
+import Legend from './Legend';
 
 export default {
-  name: 'pie-chart',
+  name: 'piechart',
+  components: {Legend},
   props: {
-    svgSize: Number, 
-    donutRatio: Number, 
+    outerRadius: Number, 
+    innerRadius: Number,
+    arcPadding: Number,
     grouping: Boolean, 
-    groupingThreshold: Number, 
+    groupingThreshold: Number,
+    colorscheme: Array,
     valueKey: String, 
     labelKey: String,
     config: String
@@ -21,9 +25,11 @@ export default {
     return {
       sum: 0,
       items: [],
-      labels: [],
       sectors: [],
-      colors: [],
+      legendData: {
+        labels: [],
+        colors: []
+      },
       svgViewBox: '-1 -1 2 2',
       svgStyle: 'transform: rotate(-0.25turn)'
     }
@@ -41,8 +47,7 @@ export default {
         if (!this.sum) {
           for (let i = 0; i < this.items.length; i++) {
             this.sum += Number(this.items[i][this.getValueKey]);
-            this.labels[i] = this.items[i][this.getLabelKey];
-            this.colors[i] = this.getRandomColor();
+            
           }
         }
 
@@ -51,76 +56,85 @@ export default {
     },
     createSVG() {
       var text = "";
-
-      var width = this.getSize;
-      var height = this.getSize;
-
-      var radius = Math.min(width, height) / 2;
-      var thickness = 60;
-      var color = d3.scaleOrdinal(d3.schemeSet1);
+      var color = d3.scaleOrdinal(this.colorscheme);
+      var width = this.getOuterRadius * 2 + this.getArcPadding * 2;
+      var height = width;
 
       var svg = d3.select(this.$el)
-      .append('svg')
-      .attr('class', 'pie')
-      .attr('width', width)
-      .attr('height', height);
+        .append('svg')
+        .attr('class', 'pie')
+        .attr('width', width)
+        .attr('height', height);
 
       var g = svg.append('g')
-      .attr('transform', 'translate(' + (width/2) + ',' + (height/2) + ')');
+        .attr(
+          'transform', 
+          'translate(' + (width / 2) + ',' + (height / 2) + ')'
+        );
 
       var arc = d3.arc()
-      .innerRadius(radius - thickness)
-      .outerRadius(radius);
+        .innerRadius(this.getInnerRadius)
+        .outerRadius(this.getOuterRadius);
 
       var pie = d3.pie()
-      .value(d => d[this.getValueKey()])
-      .sort(null);
+        .value(d => d[this.getValueKey()])
+        .sort(null);
 
       var path = g.selectAll('path')
-      .data(pie(this.items))
-      .enter()
-      .append("g")
-      .attr("id", (d, i) => "sector" + i)
-      .on("mouseover", (d, i) => {
-            let g = d3.select("#sector" + i)
-              .style("cursor", "pointer")
-              .style("fill", "black")
-              .append("g")
-              .attr("class", "text-group");
-       
-            g.append("text")
-              .attr("class", "name-text")
-              .text(`${d.data[this.getLabelKey()]}`)
-              .attr('text-anchor', 'middle')
-              .attr('dy', '-1.2em');
-        
-            g.append("text")
-              .attr("class", "value-text")
-              .text(`${d.data[this.getValueKey()]}`)
-              .attr('text-anchor', 'middle')
-              .attr('dy', '.6em');
-          })
-        .on("mouseout", function(d) {
-            d3.select(this)
-              .style("cursor", "none")  
-              .style("fill", color(this._current))
-              .select(".text-group").remove();
-          })
+        .data(pie(this.items))
+        .enter()
+        .each((sct, i) => {
+          this.legendData.labels[i] = sct.data[this.getLabelKey()];
+          this.legendData.colors[i] = color(i);
+        })
+        .append("g")
+        .attr("id", (sct, i) => "sector" + i)
+        .on("mouseover", (sct, i) => {
+          let g = d3.select("#sector" + i)
+            .style("cursor", "pointer")
+            .style("fill", "black")
+            .append("g")
+            .attr("class", "text-group");
+     
+          g.append("text")
+            .attr("class", "name-text")
+            .text(`${sct.data[this.getLabelKey()]}`)
+            .attr('text-anchor', 'middle')
+            .attr('dy', '-1.2em');
+      
+          g.append("text")
+            .attr("class", "value-text")
+            .text(`${sct.data[this.getValueKey()]}`)
+            .attr('text-anchor', 'middle')
+            .attr('dy', '.6em');
+        })
+        .on("mouseout", (sct, i, nodes) => {
+          d3.select(nodes[i])
+            .style("cursor", "none")  
+            .style("fill", this.legendData.colors[i])
+            .select(".text-group").remove();
+        })
         .append('path')
         .attr('d', arc)
-        .attr('fill', (d,i) => color(i))
+        .attr('fill', (sct, i) => this.legendData.colors[i])
         .attr('opacity', '1')
-        .on("mouseover", function(d) {
-            d3.select(this)     
-              .style("cursor", "pointer")
-              .attr("opacity", "0.7");
-          })
-        .on("mouseout", function(d) {
-            d3.select(this)
-              .style("cursor", "none")  
-              .attr("opacity", "1");
-          })
-        .each(function(d, i) { this._current = i; });
+        .attr('transform', sct => {
+          sct.midAngle = (sct.endAngle - sct.startAngle) / 2 
+            + sct.startAngle;
+          var x = Math.sin(sct.midAngle) * this.getArcPadding;
+          var y = -Math.cos(sct.midAngle) * this.getArcPadding;
+          return 'translate(' + x + ',' + y + ')';
+        })
+        .on("mouseover", (sct, i, nodes) => {
+          d3.select(nodes[i])     
+            .style("cursor", "pointer")
+            .attr("opacity", "0.7");
+        })
+        .on("mouseout", (sct, i, nodes) => {
+          d3.select(nodes[i])
+            .style("cursor", "none")  
+            .attr("opacity", "1");
+        });
 
       g.append('text')
         .attr('text-anchor', 'middle')
@@ -144,35 +158,8 @@ export default {
 
       return color;
     },
-    getSectorPath(value, index) {
-      let pct = value/this.sum,
-        pctAccumulated = pct,
-        mX = 1,
-        mY = 0;
-
-      if (index > 0) {
-        mX = this.sectors[index - 1].x;
-        mY = this.sectors[index - 1].y;
-        pctAccumulated += this.sectors[index - 1].pctAccumulated;
-      }
-
-      let M = [mX, " ", mY].join(''),
-        largeArcFlag = pct > 0.5? 1 : 0,
-        ax = Math.cos(2 * Math.PI * pctAccumulated),
-        ay = Math.sin(2 * Math.PI * pctAccumulated),
-        A = ['1 1 0 ', largeArcFlag, ' 1 ', ax, ' ', ay].join('');
-
-      this.sectors[index] = {
-        x: ax, 
-        y: ay, 
-        pct: (pct * 100).toFixed(2), 
-        pctAccumulated: pctAccumulated
-      };
-
-      return ["M ", M, " A ", A, " L 0 0"].join('');
-    },
     getSectorColor(index) {
-      return this.colors[index];
+      return this.legendData.colors[index];
     },
     getValueKey() {
       return this.valueKey;
@@ -181,15 +168,18 @@ export default {
       return this.labelKey;
     }
   },
-  created() {
+  mounted() {
     this.updateData();
   },
   computed: {
-    getDonutRatio() {
-      return this.donutRatio;
+    getOuterRadius() {
+      return this.outerRadius;
     },
-    getSize() {
-      return this.svgSize;
+    getInnerRadius() {
+      return this.innerRadius;
+    },
+    getArcPadding() {
+      return this.arcPadding;
     },
     getGrouping() {
       return this.grouping;
