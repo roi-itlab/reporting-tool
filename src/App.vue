@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <h1>Reporting Tool</h1>
-    <Legend></Legend>
     <piechart 
       :outerRadius='250' 
       :innerRadius='0'
       :arcPadding='50' 
       :grouping='true' 
-      :groupingThreshold='5' 
+      :groupingThreshold='5'
+      :displayLegend='true' 
       :colorscheme='["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"]'
       :valueKey='"avg_spawns"'
       :labelKey='"name"'
@@ -34,5 +34,12 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.pieChart {
+  display: inline-block;
+  vertical-align: top;
+}
+.legend {
+  display: inline-block;
 }
 </style>

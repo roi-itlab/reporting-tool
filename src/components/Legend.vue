@@ -1,5 +1,5 @@
 <template>
-    <div id='legend'>
+    <div class='legend'>
     </div>
 </template>
 
@@ -56,11 +56,10 @@
     methods: {
       createSvg() {
         let svg
-
         let signColor = this.legendData.colors
         let dataText = this.legendData.labels
 
-        svg = d3.select('#legend')
+        svg = d3.select('.legend')
           .append('svg')
           .attr('class', 'legend')
           .append('g')
@@ -113,7 +112,7 @@
             return d
           })
           .attr('l', function (d,i) {
-            return this.clientWidth
+            return this.getComputedTextLength()
           })
           .attr("transform", function(d, i) {
             let x = (+this.getAttribute('m') * 2) + (+this.getAttribute('size'))

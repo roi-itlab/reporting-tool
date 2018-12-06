@@ -1,5 +1,8 @@
 <template>
-    <div></div>
+    <div class='pieComponent'>
+      <div class='pieChart'></div>
+      <Legend v-if='legendReady' :legendData='legendData'></Legend>
+    </div>
 </template>
 
 <script>
@@ -16,6 +19,7 @@ export default {
     arcPadding: Number,
     grouping: Boolean, 
     groupingThreshold: Number,
+    displayLegend: Boolean,
     colorscheme: Array,
     valueKey: String, 
     labelKey: String,
@@ -30,6 +34,7 @@ export default {
         labels: [],
         colors: []
       },
+      legendReady: false,
       svgViewBox: '-1 -1 2 2',
       svgStyle: 'transform: rotate(-0.25turn)'
     }
@@ -52,7 +57,7 @@ export default {
         }
 
         this.createSVG();
-      })
+      })      
     },
     createSVG() {
       var text = "";
@@ -60,9 +65,8 @@ export default {
       var width = this.getOuterRadius * 2 + this.getArcPadding * 2;
       var height = width;
 
-      var svg = d3.select(this.$el)
+      var svg = d3.select('.pieChart')
         .append('svg')
-        .attr('class', 'pie')
         .attr('width', width)
         .attr('height', height);
 
@@ -140,6 +144,11 @@ export default {
         .attr('text-anchor', 'middle')
         .attr('dy', '.35em')
         .text(text);
+
+      if (this.displayLegend) {
+        console.log('test')
+        this.legendReady = true;
+      }
     },
     getRandomColor() {
       let color = ['#', 
