@@ -23,7 +23,7 @@ export default {
         innerRadius: 0,
         arcPadding: 50,
         grouping: true,
-        groupingThreshold: 50,
+        groupingThreshold: 80,
         colorscheme: ['#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0','#f0027f','#bf5b17','#666666'],
         displayLegend: true,
         legendConfig: {

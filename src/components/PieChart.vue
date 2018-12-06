@@ -67,9 +67,17 @@ export default {
       let strokeColor = this.props.strokeColor || this.strokeColor;
       let arcPadding = this.props.arcPadding || this.arcPadding;
       let colorscheme = this.props.colorscheme || this.colorscheme;
-      let displayLegend = this.props.displayLegend || this.displayLegend;
       let legendConfig = this.props.legendConfig || this.legendConfig;
-      let grouping = this.props.grouping || this.grouping;
+      let displayLegend = this.props.displayLegend;
+      let grouping = this.props.grouping;
+
+      if (displayLegend === undefined || displayLegend === null) {
+        displayLegend = this.displayLegend;
+      }
+
+      if (grouping === undefined || grouping === null) {
+        grouping = this.grouping;
+      }
 
       if (grouping) {
         this.groupItems();
