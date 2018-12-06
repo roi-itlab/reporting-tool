@@ -22,6 +22,8 @@ export default {
         valueKey: VueTypes.string.isRequired,
         outerRadius: VueTypes.number.isRequired,
         innerRadius: VueTypes.number,
+        strokeWidth: VueTypes.number,
+        strokeColor: VueTypes.string,
         arcPadding: VueTypes.number,
         grouping: VueTypes.bool,
         groupingThreshold: VueTypes.number,
@@ -30,11 +32,13 @@ export default {
         legendConfig: VueTypes.object
       }),
     innerRadius: VueTypes.number.def(0),
+    strokeWidth: VueTypes.number.def(0),
+    strokeColor: VueTypes.string.def('black'),
     arcPadding: VueTypes.number.def(0),
     grouping: VueTypes.bool.def(false),
     colorscheme: VueTypes.array.def(['#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0','#f0027f','#bf5b17','#666666']),
     displayLegend: VueTypes.bool.def(true),
-    legendConfig: VueTypes.object.def({}),
+    legendConfig: VueTypes.object.def({})
   },
   data () {
     return {
@@ -59,6 +63,8 @@ export default {
     },
     createSVG() {
       let innerRadius = this.props.innerRadius || this.innerRadius;
+      let strokeWidth = this.props.strokeWidth || this.strokeWidth;
+      let strokeColor = this.props.strokeColor || this.strokeColor;
       let arcPadding = this.props.arcPadding || this.arcPadding;
       let colorscheme = this.props.colorscheme || this.colorscheme;
       let displayLegend = this.props.displayLegend || this.displayLegend;
@@ -128,6 +134,8 @@ export default {
         })
         .append('path')
         .attr('d', arc)
+        .attr('stroke', strokeColor)
+        .attr('stroke-width', strokeWidth)
         .attr('fill', (sct, i) => this.legendData.colors[i])
         .attr('opacity', '1')
         .attr('transform', sct => {
