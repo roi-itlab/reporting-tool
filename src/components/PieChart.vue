@@ -146,7 +146,6 @@ export default {
         .text(text);
 
       if (this.displayLegend) {
-        console.log('test')
         this.legendReady = true;
       }
     },
