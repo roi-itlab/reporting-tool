@@ -60,10 +60,14 @@ export default {
     createSVG() {
       let innerRadius = this.props.innerRadius || this.innerRadius;
       let arcPadding = this.props.arcPadding || this.arcPadding;
-      let grouping = this.props.grouping || this.grouping;
       let colorscheme = this.props.colorscheme || this.colorscheme;
       let displayLegend = this.props.displayLegend || this.displayLegend;
       let legendConfig = this.props.legendConfig || this.legendConfig;
+      let grouping = this.props.grouping || this.grouping;
+
+      if (grouping) {
+        this.groupItems();
+      }
 
       let text = '';
       let color = d3.scaleOrdinal(colorscheme);
@@ -106,13 +110,13 @@ export default {
      
           g.append('text')
             .attr('class', 'name-text')
-            .text(`${sct.data[this.props.labelKey]}`)
+            .text(sct.data[this.props.labelKey])
             .attr('text-anchor', 'middle')
             .attr('dy', '-1.2em');
       
           g.append('text')
             .attr('class', 'value-text')
-            .text(`${sct.data[this.props.valueKey]}`)
+            .text(+(sct.data[this.props.valueKey].toFixed(2)))
             .attr('text-anchor', 'middle')
             .attr('dy', '.6em');
         })
@@ -154,6 +158,26 @@ export default {
         this.props.legendConfig.legendDataLabels = this.legendData.labels;
         this.legendReady = true;
       }
+    },
+    groupItems() {
+      let value = 0;
+      let label = 'Others';
+
+      for (let i = this.items.length - 1; i >= 0; i--) {
+        if (
+          this.items[i][this.props.valueKey] 
+            <= this.props.groupingThreshold
+        ) 
+        {
+          value += this.items[i][this.props.valueKey];
+          this.items.splice(i, 1);
+        }
+      }
+
+      this.items.push({
+        [this.props.labelKey]: label,
+        [this.props.valueKey]: +(value.toFixed(2))
+      });
     }
   },
   mounted() {
