@@ -15,15 +15,15 @@ export default {
   data () {
     return {
       pieConfig: {
-        serverConfig: "configs/pie_config_2.json",
-        labelKey: "name",
-        valueKey: "avg_spawns",
+        serverConfig: 'configs/pie_config_2.json',
+        labelKey: 'name',
+        valueKey: 'avg_spawns',
         outerRadius: 250,
         innerRadius: 0,
         arcPadding: 50,
         grouping: true,
         groupingThreshold: 5,
-        colorscheme: ["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"],
+        colorscheme: ['#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0','#f0027f','#bf5b17','#666666'],
         displayLegend: true,
         legendConfig: {
             borderVis: true,

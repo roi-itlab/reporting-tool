@@ -17,18 +17,24 @@ export default {
   props: {
     props:
       VueTypes.shape({
-        outerRadius: VueTypes.number, 
+        serverConfig: VueTypes.string.isRequired,
+        labelKey: VueTypes.string.isRequired,
+        valueKey: VueTypes.string.isRequired,
+        outerRadius: VueTypes.number.isRequired,
         innerRadius: VueTypes.number,
         arcPadding: VueTypes.number,
-        grouping: VueTypes.bool, 
+        grouping: VueTypes.bool,
         groupingThreshold: VueTypes.number,
-        displayLegend: VueTypes.bool,
-        legendConfig: VueTypes.object,
         colorscheme: VueTypes.array,
-        valueKey: VueTypes.string, 
-        labelKey: VueTypes.string,
-        serverConfig: VueTypes.string
-      }).def({})
+        displayLegend: VueTypes.bool,
+        legendConfig: VueTypes.object
+      }).def({}),
+    innerRadius: VueTypes.number.def(0),
+    arcPadding: VueTypes.number.def(0),
+    grouping: VueTypes.bool.def(false),
+    colorscheme: VueTypes.array.def(['#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0','#f0027f','#bf5b17','#666666']),
+    displayLegend: VueTypes.bool.def(true),
+    legendConfig: VueTypes.object.def({}),
   },
   data () {
     return {
@@ -64,31 +70,37 @@ export default {
       })      
     },
     createSVG() {
-      var text = "";
-      var color = d3.scaleOrdinal(this.props.colorscheme);
-      var width = this.props.outerRadius * 2 + this.props.arcPadding * 2;
-      var height = width;
+      let innerRadius = this.props.innerRadius || this.innerRadius;
+      let arcPadding = this.props.arcPadding || this.arcPadding;
+      let grouping = this.props.grouping || this.grouping;
+      let colorscheme = this.props.colorscheme || this.colorscheme;
+      let displayLegend = this.props.displayLegend || this.displayLegend;
+      let legendConfig = this.props.legendConfig || this.legendConfig;
 
-      var svg = d3.select('.pieChart')
+      let text = "";
+      let color = d3.scaleOrdinal(colorscheme);
+      let size = this.props.outerRadius * 2 + arcPadding * 2;
+
+      let svg = d3.select('.pieChart')
         .append('svg')
-        .attr('width', width)
-        .attr('height', height);
+        .attr('width', size)
+        .attr('height', size);
 
-      var g = svg.append('g')
+      let g = svg.append('g')
         .attr(
           'transform', 
-          'translate(' + (width / 2) + ',' + (height / 2) + ')'
+          'translate(' + (size / 2) + ',' + (size / 2) + ')'
         );
 
-      var arc = d3.arc()
-        .innerRadius(this.props.innerRadius)
+      let arc = d3.arc()
+        .innerRadius(innerRadius)
         .outerRadius(this.props.outerRadius);
 
-      var pie = d3.pie()
+      let pie = d3.pie()
         .value(d => d[this.props.valueKey])
         .sort(null);
 
-      var path = g.selectAll('path')
+      let path = g.selectAll('path')
         .data(pie(this.items))
         .enter()
         .each((sct, i) => {
@@ -129,8 +141,8 @@ export default {
         .attr('transform', sct => {
           sct.midAngle = (sct.endAngle - sct.startAngle) / 2 
             + sct.startAngle;
-          var x = Math.sin(sct.midAngle) * this.props.arcPadding;
-          var y = -Math.cos(sct.midAngle) * this.props.arcPadding;
+          let x = Math.sin(sct.midAngle) * arcPadding;
+          let y = -Math.cos(sct.midAngle) * arcPadding;
           return 'translate(' + x + ',' + y + ')';
         })
         .on("mouseover", (sct, i, nodes) => {
@@ -149,7 +161,7 @@ export default {
         .attr('dy', '.35em')
         .text(text);
 
-      if (this.props.displayLegend) {
+      if (displayLegend) {
         this.props.legendConfig.legendDataColors = this.legendData.colors;
         this.props.legendConfig.legendDataLabels = this.legendData.labels;
         this.legendReady = true;
