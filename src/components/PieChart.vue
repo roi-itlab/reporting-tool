@@ -38,16 +38,12 @@ export default {
   },
   data () {
     return {
-      sum: 0,
       items: [],
-      sectors: [],
       legendData: {
         labels: [],
         colors: []
       },
-      legendReady: false,
-      svgViewBox: '-1 -1 2 2',
-      svgStyle: 'transform: rotate(-0.25turn)'
+      legendReady: false
     }
   },
   methods: {
@@ -58,14 +54,6 @@ export default {
     updateData() {
       this.getQuery().then(response => {
         this.items = response.data[0];
-        this.sectors[this.items.length] = {};
-        
-        if (!this.sum) {
-          for (let i = 0; i < this.items.length; i++) {
-            this.sum += Number(this.items[i][this.valueKey]);
-          }
-        }
-
         this.createSVG();
       })      
     },
@@ -77,7 +65,7 @@ export default {
       let displayLegend = this.props.displayLegend || this.displayLegend;
       let legendConfig = this.props.legendConfig || this.legendConfig;
 
-      let text = "";
+      let text = '';
       let color = d3.scaleOrdinal(colorscheme);
       let size = this.props.outerRadius * 2 + arcPadding * 2;
 
@@ -107,32 +95,32 @@ export default {
           this.legendData.labels[i] = sct.data[this.props.labelKey];
           this.legendData.colors[i] = color(i);
         })
-        .append("g")
-        .attr("id", (sct, i) => "sector" + i)
-        .on("mouseover", (sct, i) => {
-          let g = d3.select("#sector" + i)
-            .style("cursor", "pointer")
-            .style("fill", "black")
-            .append("g")
-            .attr("class", "text-group");
+        .append('g')
+        .attr('id', (sct, i) => 'sector' + i)
+        .on('mouseover', (sct, i) => {
+          let g = d3.select('#sector' + i)
+            .style('cursor', 'pointer')
+            .style('fill', 'black')
+            .append('g')
+            .attr('class', 'text-group');
      
-          g.append("text")
-            .attr("class", "name-text")
+          g.append('text')
+            .attr('class', 'name-text')
             .text(`${sct.data[this.props.labelKey]}`)
             .attr('text-anchor', 'middle')
             .attr('dy', '-1.2em');
       
-          g.append("text")
-            .attr("class", "value-text")
+          g.append('text')
+            .attr('class', 'value-text')
             .text(`${sct.data[this.props.valueKey]}`)
             .attr('text-anchor', 'middle')
             .attr('dy', '.6em');
         })
-        .on("mouseout", (sct, i, nodes) => {
+        .on('mouseout', (sct, i, nodes) => {
           d3.select(nodes[i])
-            .style("cursor", "none")  
-            .style("fill", this.legendData.colors[i])
-            .select(".text-group").remove();
+            .style('cursor', 'none')  
+            .style('fill', this.legendData.colors[i])
+            .select('.text-group').remove();
         })
         .append('path')
         .attr('d', arc)
@@ -145,15 +133,15 @@ export default {
           let y = -Math.cos(sct.midAngle) * arcPadding;
           return 'translate(' + x + ',' + y + ')';
         })
-        .on("mouseover", (sct, i, nodes) => {
+        .on('mouseover', (sct, i, nodes) => {
           d3.select(nodes[i])     
-            .style("cursor", "pointer")
-            .attr("opacity", "0.7");
+            .style('cursor', 'pointer')
+            .attr('opacity', '0.7');
         })
-        .on("mouseout", (sct, i, nodes) => {
+        .on('mouseout', (sct, i, nodes) => {
           d3.select(nodes[i])
-            .style("cursor", "none")  
-            .attr("opacity", "1");
+            .style('cursor', 'none')  
+            .attr('opacity', '1');
         });
 
       g.append('text')
