@@ -19,7 +19,7 @@
         borderWidth: VueTypes.bool,
         margin: VueTypes.integer,
         dataSignVis: VueTypes.bool,
-      }).def({}),
+      }).def({}).loose,
 
       maxHeight: VueTypes.string.def('auto'),
       borderVis: VueTypes.bool.def(false),

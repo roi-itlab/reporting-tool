@@ -112,6 +112,7 @@ export default {
         .on('click', (sct, i) => {
           d3.selectAll('.pieTooltip').remove();
           if (tooltipTimerID) {
+            console.log('there was a timer ', tooptipTimerID);
             clearTimeout(tooltipTimerID);
             tooltipTimerID = 0;
           }
