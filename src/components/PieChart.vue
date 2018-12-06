@@ -75,7 +75,8 @@ export default {
         this.groupItems();
       }
 
-      let text = '';
+      let sum = 0;
+      let tooltipTimerID = 0;
       let color = d3.scaleOrdinal(colorscheme);
       let size = this.props.outerRadius * 2 + arcPadding * 2;
 
@@ -102,35 +103,44 @@ export default {
         .data(pie(this.items))
         .enter()
         .each((sct, i) => {
+          sum += sct.data[this.props.valueKey];
           this.legendData.labels[i] = sct.data[this.props.labelKey];
           this.legendData.colors[i] = color(i);
         })
         .append('g')
         .attr('id', (sct, i) => 'sector' + i)
-        .on('mouseover', (sct, i) => {
-          let g = d3.select('#sector' + i)
-            .style('cursor', 'pointer')
-            .style('fill', 'black')
-            .append('g')
-            .attr('class', 'text-group');
-     
-          g.append('text')
-            .attr('class', 'name-text')
-            .text(sct.data[this.props.labelKey])
-            .attr('text-anchor', 'middle')
-            .attr('dy', '-1.2em');
-      
-          g.append('text')
-            .attr('class', 'value-text')
-            .text(+(sct.data[this.props.valueKey].toFixed(2)))
-            .attr('text-anchor', 'middle')
-            .attr('dy', '.6em');
+        .on('click', (sct, i) => {
+          d3.selectAll('.tooltip').remove();
+          if (tooltipTimerID) {
+            clearTimeout(tooltipTimerID);
+            tooltipTimerID = 0;
+          }
+
+          let tooltip = d3.select('.pieChart')
+            .append('div')
+            .attr('class', 'tooltip')
+            .style('left', d3.event.pageX + 'px')
+            .style('top', d3.event.pageY + 'px')
+            .style('display', 'block');
+
+          tooltip.append('div')
+            .attr('class', 'label')
+            .text(sct.data[this.props.labelKey]);
+
+          tooltip.append('div')
+            .attr('class', 'value')
+            .text(this.roundValue(sct.data[this.props.valueKey]));
+
+          tooltip.append('div')
+            .attr('class', 'percent')
+            .text(this.toPercent(sct.data[this.props.valueKey], sum));
         })
-        .on('mouseout', (sct, i, nodes) => {
-          d3.select(nodes[i])
-            .style('cursor', 'none')  
-            .style('fill', this.legendData.colors[i])
-            .select('.text-group').remove();
+        .on('mouseout', () => {
+          if (!tooltipTimerID) {
+            tooltipTimerID = setTimeout(() => {
+              d3.selectAll('.tooltip').remove();
+            }, 1000)
+          }
         })
         .append('path')
         .attr('d', arc)
@@ -156,16 +166,17 @@ export default {
             .attr('opacity', '1');
         });
 
-      g.append('text')
-        .attr('text-anchor', 'middle')
-        .attr('dy', '.35em')
-        .text(text);
-
       if (displayLegend) {
         this.props.legendConfig.legendDataColors = this.legendData.colors;
         this.props.legendConfig.legendDataLabels = this.legendData.labels;
         this.legendReady = true;
       }
+    },
+    roundValue(value) {
+      return +(value.toFixed(2));
+    },
+    toPercent(value, sum) {
+      return this.roundValue(value/sum * 100) + '%';
     },
     groupItems() {
       let value = 0;
@@ -184,7 +195,7 @@ export default {
 
       this.items.push({
         [this.props.labelKey]: label,
-        [this.props.valueKey]: +(value.toFixed(2))
+        [this.props.valueKey]: this.roundValue(value)
       });
     }
   },
@@ -194,6 +205,27 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+  .tooltip {
+    z-index: 10;
+    display: none;
+    position: absolute;
+    padding: 10px;
 
+    min-width: 80px;
+    
+    font-size: 12px;
+    text-align: center;
+    line-height: 140%;
+    font-weight: 300;
+    
+    color: #fff;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 2px;
+    box-shadow: 0 0 5px #999999;
+  }
+
+  .label {
+   font-weight: 600;
+  }
 </style>
