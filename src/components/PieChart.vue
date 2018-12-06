@@ -1,12 +1,13 @@
 <template>
     <div class='pieComponent'>
       <div class='pieChart'></div>
-      <Legend v-if='legendReady' :legendData='legendData'></Legend>
+      <Legend v-if='legendReady' :props='props.legendConfig'></Legend>
     </div>
 </template>
 
 <script>
 import PostsService from '@/services/PostsService';
+import VueTypes from 'vue-types';
 import * as d3 from 'd3';
 import Legend from './Legend';
 
@@ -14,16 +15,20 @@ export default {
   name: 'piechart',
   components: {Legend},
   props: {
-    outerRadius: Number, 
-    innerRadius: Number,
-    arcPadding: Number,
-    grouping: Boolean, 
-    groupingThreshold: Number,
-    displayLegend: Boolean,
-    colorscheme: Array,
-    valueKey: String, 
-    labelKey: String,
-    config: String
+    props:
+      VueTypes.shape({
+        outerRadius: VueTypes.number, 
+        innerRadius: VueTypes.number,
+        arcPadding: VueTypes.number,
+        grouping: VueTypes.bool, 
+        groupingThreshold: VueTypes.number,
+        displayLegend: VueTypes.bool,
+        legendConfig: VueTypes.object,
+        colorscheme: VueTypes.array,
+        valueKey: VueTypes.string, 
+        labelKey: VueTypes.string,
+        serverConfig: VueTypes.string
+      }).def({})
   },
   data () {
     return {
@@ -41,7 +46,7 @@ export default {
   },
   methods: {
     async getQuery() {
-      const response = await PostsService.fetchQuery(this.config);
+      const response = await PostsService.fetchQuery(this.props.serverConfig);
       return response;
     },
     updateData() {
@@ -51,8 +56,7 @@ export default {
         
         if (!this.sum) {
           for (let i = 0; i < this.items.length; i++) {
-            this.sum += Number(this.items[i][this.getValueKey]);
-            
+            this.sum += Number(this.items[i][this.valueKey]);
           }
         }
 
@@ -61,8 +65,8 @@ export default {
     },
     createSVG() {
       var text = "";
-      var color = d3.scaleOrdinal(this.colorscheme);
-      var width = this.getOuterRadius * 2 + this.getArcPadding * 2;
+      var color = d3.scaleOrdinal(this.props.colorscheme);
+      var width = this.props.outerRadius * 2 + this.props.arcPadding * 2;
       var height = width;
 
       var svg = d3.select('.pieChart')
@@ -77,18 +81,18 @@ export default {
         );
 
       var arc = d3.arc()
-        .innerRadius(this.getInnerRadius)
-        .outerRadius(this.getOuterRadius);
+        .innerRadius(this.props.innerRadius)
+        .outerRadius(this.props.outerRadius);
 
       var pie = d3.pie()
-        .value(d => d[this.getValueKey()])
+        .value(d => d[this.props.valueKey])
         .sort(null);
 
       var path = g.selectAll('path')
         .data(pie(this.items))
         .enter()
         .each((sct, i) => {
-          this.legendData.labels[i] = sct.data[this.getLabelKey()];
+          this.legendData.labels[i] = sct.data[this.props.labelKey];
           this.legendData.colors[i] = color(i);
         })
         .append("g")
@@ -102,13 +106,13 @@ export default {
      
           g.append("text")
             .attr("class", "name-text")
-            .text(`${sct.data[this.getLabelKey()]}`)
+            .text(`${sct.data[this.props.labelKey]}`)
             .attr('text-anchor', 'middle')
             .attr('dy', '-1.2em');
       
           g.append("text")
             .attr("class", "value-text")
-            .text(`${sct.data[this.getValueKey()]}`)
+            .text(`${sct.data[this.props.valueKey]}`)
             .attr('text-anchor', 'middle')
             .attr('dy', '.6em');
         })
@@ -125,8 +129,8 @@ export default {
         .attr('transform', sct => {
           sct.midAngle = (sct.endAngle - sct.startAngle) / 2 
             + sct.startAngle;
-          var x = Math.sin(sct.midAngle) * this.getArcPadding;
-          var y = -Math.cos(sct.midAngle) * this.getArcPadding;
+          var x = Math.sin(sct.midAngle) * this.props.arcPadding;
+          var y = -Math.cos(sct.midAngle) * this.props.arcPadding;
           return 'translate(' + x + ',' + y + ')';
         })
         .on("mouseover", (sct, i, nodes) => {
@@ -145,59 +149,15 @@ export default {
         .attr('dy', '.35em')
         .text(text);
 
-      if (this.displayLegend) {
+      if (this.props.displayLegend) {
+        this.props.legendConfig.legendDataColors = this.legendData.colors;
+        this.props.legendConfig.legendDataLabels = this.legendData.labels;
         this.legendReady = true;
       }
-    },
-    getRandomColor() {
-      let color = ['#', 
-        ['00000', 
-          (Math.random() * (1 << 24) | 0).toString(16)
-        ].join('').slice(-6)
-      ].join('');
-      
-      while (color === "#ffffff") {
-        color = ['#', 
-          ['00000', 
-            (Math.random() * (1 << 24) | 0).toString(16)
-          ].join('').slice(-6)
-        ].join('');
-      }
-
-      return color;
-    },
-    getSectorColor(index) {
-      return this.legendData.colors[index];
-    },
-    getValueKey() {
-      return this.valueKey;
-    },
-    getLabelKey() {
-      return this.labelKey;
     }
   },
   mounted() {
     this.updateData();
-  },
-  computed: {
-    getOuterRadius() {
-      return this.outerRadius;
-    },
-    getInnerRadius() {
-      return this.innerRadius;
-    },
-    getArcPadding() {
-      return this.arcPadding;
-    },
-    getGrouping() {
-      return this.grouping;
-    },
-    getGroupingThreshold() {
-      return this.groupingThreshold;
-    },
-    getItems() {
-      return this.items;
-    }
   }
 }
 </script>

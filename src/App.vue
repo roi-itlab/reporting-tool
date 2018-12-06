@@ -1,18 +1,7 @@
 <template>
   <div id="app">
     <h1>Reporting Tool</h1>
-    <piechart 
-      :outerRadius='250' 
-      :innerRadius='0'
-      :arcPadding='50' 
-      :grouping='true' 
-      :groupingThreshold='5'
-      :displayLegend='true' 
-      :colorscheme='["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"]'
-      :valueKey='"avg_spawns"'
-      :labelKey='"name"'
-      :config='"configs/pie_config_2.json"'
-    ></piechart>
+    <piechart :props="pieConfig"></piechart>
   </div>
 </template>
 
@@ -22,7 +11,31 @@ import Legend from './components/Legend'
 
 export default {
   name: 'app',
-  components: {piechart, Legend}
+  components: {piechart, Legend},
+  data () {
+    return {
+      pieConfig: {
+        serverConfig: "configs/pie_config_2.json",
+        labelKey: "name",
+        valueKey: "avg_spawns",
+        outerRadius: 250,
+        innerRadius: 0,
+        arcPadding: 50,
+        grouping: true,
+        groupingThreshold: 5,
+        colorscheme: ["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"],
+        displayLegend: true,
+        legendConfig: {
+            borderVis: true,
+            borderColor: 'blue',
+            textColor: 'grey',
+            textSize: 15,
+            margin: 15,
+            dataSignVis: true
+        }
+      }
+    }
+  }
 }
 </script>
 
