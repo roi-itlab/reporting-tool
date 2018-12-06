@@ -28,7 +28,7 @@ export default {
         colorscheme: VueTypes.array,
         displayLegend: VueTypes.bool,
         legendConfig: VueTypes.object
-      }).def({}),
+      }),
     innerRadius: VueTypes.number.def(0),
     arcPadding: VueTypes.number.def(0),
     grouping: VueTypes.bool.def(false),
