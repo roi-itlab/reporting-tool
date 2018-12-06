@@ -11,15 +11,15 @@
     "axisA": ""
   },
   "axis": {
-    "color": "green",
+    "color": "blue",
     "width": 2
   },
   "dashes": {
-    "countX": 10,
-    "countY": 5,
+    "countX": 20,
+    "countY": 10,
     "height": 5,
     "width": 2,
-    "color": "orange",
+    "color": "green",
     "visible": true
   },
   "circle": {
@@ -35,12 +35,12 @@
   },
   "symbolX": {
     "visible": true,
-    "size": 15,
-    "color": "blue"
+    "size": 10,
+    "color": "yellow"
   },
   "symbolY": {
     "visible": true,
     "size": 10,
-    "color": "purple"
+    "color": "blue"
   }
 }

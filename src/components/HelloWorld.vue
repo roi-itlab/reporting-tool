@@ -1,61 +1,45 @@
 <template>
-  <LineChart></LineChart>
+  <div>
+    <Legend v-bind:props="classMishaLegendExample"></Legend>
+    <LineChart v-bind:props="classMishaLineChartExample"></LineChart>
+  </div>
+
 </template>
 <script>
-/* eslint-disable no-unused-vars */
-/* eslint-disable */
-import * as d3 from 'd3'
-import PostsService from '@/services/PostsService'
 import LineChart from './LineChart'
-var zoom
+import Legend from './Legend'
 export default {
-  components: {LineChart},
-  data () {
+  components: {LineChart, Legend},
+  data: function () {
     return {
-      dataBase: [],
-      zoom: 60,
-      iter: 0
-    }
-  },
-  computed: {
-    lineGenerator () {
-      return d3.line()
-        .curve(d3.curveNatural)
-        .x(v => v.y * zoom)
-        .y(v => v.x * zoom / 4)
-    },
-    line () {
-      return this.lineGenerator(this.dataset)
-    },
-    randomColor () {
-      var letters = '0123456789ABCDEF'
-      var color = '#'
-      for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)]
-      }
-      return color
-    }
-  },
-  methods: {
-    async getSql () {
-      this.iter += 8
-      const response = await PostsService.fetchSQL()
-      this.dataBase = response.data
-    },
-    async getCsv () {
-      this.iter += 8
-      const response = await PostsService.fetchCsv()
-      this.dataBase = response.data
-    },
-    async getXml () {
-      this.iter += 8
-      const response = await PostsService.fetchXml()
-      this.dataBase = []
-      for (var i = 0; i < response.data.note.y.length; ++i) {
-        var ob = {}
-        ob['x'] = +response.data.note.x[i]._text
-        ob['y'] = +response.data.note.y[i]._text
-        this.dataBase.push(ob)
+      classMishaLegendExample: {
+        borderVis: true,
+        borderColor: 'blue',
+        textColor: 'grey',
+        textSize: 15,
+        margin: 15,
+        dataSignVis: true,
+        legendDataLabels: ['низкая температура', 'высокая температура'],
+        legendDataColors: ['blue', 'red']
+       },
+      classMishaLineChartExample: {
+        width: 800,
+        height: 400,
+        dataXPath: "month",
+        lineVis: true,
+        dataYPath: ["temp_lo", 'temp_hi'],
+        dataCount: 2,
+        linesColor: ["blue", "red"],
+        gridVis : true,
+        circlesVis : true,
+        circlesFillColor: ['RoyalBlue', 'LightSalmon'],
+        circlesStrokeColor: ['white', 'white'],
+        areaVis: true,
+        gridX: 10,
+        gridY: 35,
+        areaColor: ['blue', 'red'],
+        areaOpacity: 0.2,
+        gridColor: 'Gainsboro'
       }
     }
   }
