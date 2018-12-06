@@ -110,7 +110,7 @@ export default {
         .append('g')
         .attr('id', (sct, i) => 'sector' + i)
         .on('click', (sct, i) => {
-          d3.selectAll('.tooltip').remove();
+          d3.selectAll('.pieTooltip').remove();
           if (tooltipTimerID) {
             clearTimeout(tooltipTimerID);
             tooltipTimerID = 0;
@@ -118,21 +118,21 @@ export default {
 
           let tooltip = d3.select('.pieChart')
             .append('div')
-            .attr('class', 'tooltip')
+            .attr('class', 'pieTooltip')
             .style('left', d3.event.pageX + 'px')
             .style('top', d3.event.pageY + 'px')
             .style('display', 'block');
 
           tooltip.append('div')
-            .attr('class', 'label')
+            .attr('class', 'pieTooltipLabel')
             .text(sct.data[this.props.labelKey]);
 
           tooltip.append('div')
-            .attr('class', 'value')
+            .attr('class', 'pieTooltipValue')
             .text(this.roundValue(sct.data[this.props.valueKey]));
 
           tooltip.append('div')
-            .attr('class', 'percent')
+            .attr('class', 'pieTooltipPercent')
             .text(this.toPercent(sct.data[this.props.valueKey], sum));
         })
         .on('mouseout', () => {
@@ -169,6 +169,9 @@ export default {
       if (displayLegend) {
         this.props.legendConfig.legendDataColors = this.legendData.colors;
         this.props.legendConfig.legendDataLabels = this.legendData.labels;
+        if (this.props.legendConfig.scroll) {
+          this.props.legendConfig.maxHeight = size + 'px';
+        }
         this.legendReady = true;
       }
     },
@@ -206,7 +209,7 @@ export default {
 </script>
 
 <style>
-  .tooltip {
+  .pieTooltip {
     z-index: 10;
     display: none;
     position: absolute;
@@ -225,7 +228,7 @@ export default {
     box-shadow: 0 0 5px #999999;
   }
 
-  .label {
+  .pieTooltipLabel {
    font-weight: 600;
   }
 </style>

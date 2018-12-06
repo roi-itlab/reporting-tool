@@ -1,5 +1,5 @@
 <template>
-    <div class='legend'>
+    <div class='legend' :style='style'>
     </div>
 </template>
 
@@ -9,6 +9,7 @@
   export default {
     props: {
       props : VueTypes.shape({
+        maxHeight: VueTypes.string,
         borderVis: VueTypes.bool,
         borderColor: VueTypes.string,
         textSize: VueTypes.integer,
@@ -20,6 +21,7 @@
         dataSignVis: VueTypes.bool,
       }).def({}),
 
+      maxHeight: VueTypes.string.def('auto'),
       borderVis: VueTypes.bool.def(false),
       borderColor: VueTypes.string.def('red'),
       textSize: VueTypes.integer.def(15),
@@ -116,6 +118,17 @@
         d3.selectAll('.bg').attr('width', width).attr('height', height)
         d3.selectAll('.legend').attr('width', width + borderWidth * 2).attr('height', height + borderWidth * 2 )
       }
+    },
+    computed: {
+      style() {
+        return 'max-height: ' + this.props.maxHeight;
+      }
     }
   }
 </script>
+<style>
+  .legend {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+</style>
