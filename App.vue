@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <BarChart></BarChart>
-     <!--<BarChart width_chart = 900></BarChart>-->
+    <!--<BarChart></BarChart>-->
+     <BarChart width_chart = 900 height_chart=500 width_bar=3.45></BarChart>
   </div>
 </template>
 

@@ -37,7 +37,8 @@ export default {
       color_horizontal_lines_grid: VueTypes.string,
       color_bar: VueTypes.string,
       width_bar: VueTypes.number,
-      padding_of_labels: VueTypes.number,
+      padding_of_labels_y: VueTypes.number,
+      padding_of_labels_x: VueTypes.number,
       displayLegend: VueTypes.bool,
       legendConfig: VueTypes.object,
       dataSignVis: VueTypes.bool
@@ -65,8 +66,10 @@ export default {
     color_vertical_lines_grid: VueTypes.string.def("#6789ab"),
     color_horizontal_lines_grid: VueTypes.string.def("#6789ab"),
     color_bar: VueTypes.string.def("green"),
-    width_bar: VueTypes.number.def(4),
-    padding_of_labels: VueTypes.number.def(50),
+    width_bar: VueTypes.number.def(3.2),
+    distance_between_bars: VueTypes.number.def(2),
+    padding_of_labels_y: VueTypes.number.def(40),
+    padding_of_labels_x: VueTypes.number.def(3.8),
     displayLegend: VueTypes.bool.def(true),
     legendConfig: VueTypes.object.def({}),
     dataSignVis: VueTypes.bool.def(true)
@@ -105,7 +108,9 @@ data: function(){
    let color_horizontal_lines_grid = this.props.color_horizontal_lines_grid || this.color_horizontal_lines_grid;
    let color_bar = this.props.color_bar || this.color_bar;
    let width_bar = this.props.width_bar || this.width_bar;
-   let padding_of_labels = this.props.padding_of_labels || this.padding_of_labels;
+   let distance_between_bars = this.props.distance_between_grid_lines || this.distance_between_bars;
+   let padding_of_labels_y = this.props.padding_of_labels_y || this.padding_of_labels_y;
+   let padding_of_labels_x = this.props.padding_of_labels_x || this.padding_of_labels_x;
    let legendConfig = this.props.legendConfig || this.legendConfig;
    let displayLegend = this.props.displayLegend;
    let dataSignVis = this.props.dataSignVis || this.dataSignVis;
@@ -116,6 +121,7 @@ data: function(){
   
    let chartWidth;
    let chartHeight;
+   let dbb;
    this.legendData.name_legend = ["Crimes 2014","Crimes 2015"];
    this.legendData.color_legend = ["#4CBB17", "green"];
    if (this.props.legendConfig === undefined) {
@@ -281,7 +287,7 @@ data: function(){
         return chartWidth + 1.5*margin;
     })
         .style("stroke", color_horizontal_lines_grid);
-
+/*
     //легенда
     var crimename  = ["Crimes 2014","Crimes 2015"];
     var colcr = d3.scaleOrdinal()
@@ -308,7 +314,8 @@ data: function(){
       .attr("y", chartHeightRect - 1.5*margin)
       .attr("dy", "0.32em")
       .text(function(d) { return d; });    
-
+*/
+    dbb = distance_between_bars;
     // создаем элемент g с набором столбиков
     substr.append("g")
     // сдвиг оси вправо
@@ -325,7 +332,7 @@ data: function(){
        //multiplying it by the calculated width of each bar, and adding a padding value so we can see 
        //some space between bars.
       .attr('x', function (value, index) {                   
-            return (index * (chartWidth / dataset.length)) + 2*margin
+            return (index * (chartWidth / dataset.length)) + dbb*margin
           })
       // The width is dynamically calculated to have an even distribution of bars that take up the 
       //entire width of the chart.
@@ -351,18 +358,18 @@ data: function(){
       .attr('fill', color_bar);
 
     //подписи столбиков
-  let pol = padding_of_labels;
-  console.log(pol);
+  let poly = padding_of_labels_y;
+  let polx = padding_of_labels_x;
   substr.selectAll("text.bar")
     .data(dataset)
     .enter().append("text")
     .attr("class", "bar")
     .attr("text-anchor", "middle")
      .attr("x", function (value, index) {                   
-            return (index * (chartWidth / dataset.length)) + 3.8*margin
+            return (index * (chartWidth / dataset.length)) + polx*margin
           })
         .attr("y", function (value, index) {                    
-        return chartHeight   - (value * heightScalingFactor) + pol
+        return chartHeight   - (value * heightScalingFactor) + poly
       })
         .text(function (value, index) {              
         return (value)});
@@ -389,7 +396,7 @@ data: function(){
       // The width is dynamically calculated to have an even distribution of bars that take up the 
       //entire width of the chart.
       //3*padding - уменьшение толщины столбиков
-      .attr('width', (chartWidth / dataset2.length) - (width_bar+0.5)*margin) 
+      .attr('width', (chartWidth / dataset2.length) - width_bar*margin) 
       // Set the rectangle by subtracting the scaled height from the height of the chart 
       //(this has to be done becuase SVG coordinates start with 0,0 at their top left corner).
       //0.9 в y и height отвечают за то, чтобы столбик не подпирал график
