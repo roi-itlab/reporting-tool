@@ -1,7 +1,9 @@
 <template>
   <div id='app'>
-    <h1>Reporting Tool</h1>
-    <hr>
+    <div class='title'>
+      <h1>Reporting Tool</h1>
+      <hr>
+    </div>
     <piechart :props='pieConfig2'></piechart>
     <piechart :props='pieConfig'></piechart>
   </div>
@@ -97,9 +99,22 @@ export default {
     text-align: center;
     color: #2c3e50;
     margin-top: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
   }
 
-  hr { 
+  #app div:not(:first-child) {
+    margin: 0 20px;
+    /*flex: 1;*/
+  }
+
+  .title {
+    width: 100%;
+  }
+
+  .title hr { 
     border: 0;
     height: 1px;
     margin-bottom: 20px;
@@ -109,6 +124,12 @@ export default {
       rgba(0, 0, 0, 0.75), 
       rgba(0, 0, 0, 0)
     ); 
+  }
+  
+  .pieComponent {
+    padding: 20px;
+    border: 2px solid #bbb;
+    border-radius: 10px;
   }
 
   .pieChart {
