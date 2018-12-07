@@ -40,13 +40,14 @@ export default {
       pieConfig2: {
         serverConfig: 'configs/pie_config_2.json',
         labelKey: 'name',
-        valueKey: 'avg_spawns',
+        valueKey: 'height',
         outerRadius: 100,
         innerRadius: 0,
         arcPadding: 0,
         grouping: true,
-        groupingThreshold: 300,
-        colorscheme: this.getColorScheme('category10'),
+        groupingThreshold: 2.5,
+        colorscheme: this.getColorScheme('blues'),
+        strokeWidth: 5,
         displayLegend: true,
         legendConfig: {
             scroll: false,
