@@ -71,12 +71,16 @@ export default {
       let displayLegend = this.props.displayLegend;
       let grouping = this.props.grouping;
 
-      if (displayLegend === undefined || displayLegend === null) {
+      if (displayLegend === undefined) {
         displayLegend = this.displayLegend;
       }
 
-      if (grouping === undefined || grouping === null) {
+      if (grouping === undefined) {
         grouping = this.grouping;
+      }
+
+      if (this.props.legendConfig === undefined) {
+        this.props.legendConfig = legendConfig;
       }
 
       if (grouping) {
