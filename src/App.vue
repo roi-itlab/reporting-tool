@@ -4,20 +4,20 @@
       <h1>Reporting Tool</h1>
       <hr>
     </div>
-    <piechart :props='pieConfig2'></piechart>
-    <piechart :props='pieConfig'></piechart>
-    <piechart :props='pieConfig4'></piechart>
-    <piechart :props='pieConfig3'></piechart>
+    <PieChart :props='pieConfig2'></PieChart>
+    <PieChart :props='pieConfig'></PieChart>
+    <PieChart :props='pieConfig4'></PieChart>
+    <PieChart :props='pieConfig3'></PieChart>
   </div>
 </template>
 
 <script>
-import piechart from './components/PieChart'
+import PieChart from './components/PieChart'
 import Legend from './components/Legend'
 
 export default {
   name: 'app',
-  components: {piechart, Legend},
+  components: {PieChart, Legend},
   data () {
     return {
       pieConfig: {
@@ -30,6 +30,8 @@ export default {
         grouping: true,
         groupingThreshold: 80,
         colorscheme: this.getColorScheme('magma'),
+        title: 'Pokemon: Average Spawns',
+        titleColor: this.getColorScheme('magma')[7],
         displayLegend: true,
         legendConfig: {
             scroll: true,
@@ -51,6 +53,9 @@ export default {
         grouping: true,
         groupingThreshold: 2.5,
         colorscheme: this.getColorScheme('blues'),
+        title: 'Pokemon: Height (in meters)',
+        titleSize: '1.5em',
+        titleColor: this.getColorScheme('blues')[7],
         strokeWidth: 5,
         displayLegend: true,
         legendConfig: {
@@ -73,6 +78,8 @@ export default {
         grouping: true,
         groupingThreshold: 50,
         colorscheme: this.getColorScheme('rainbow'),
+        title: 'Pokemon: Weight (in kg)',
+        titleColor: this.getColorScheme('rainbow')[0],
         strokeWidth: 1,
         strokeColor: 'blue',
         displayLegend: true,
@@ -92,6 +99,8 @@ export default {
         valueKey: 'spawn_chance',
         outerRadius: 250,
         colorscheme: this.getColorScheme('pastel2'),
+        title: 'Pokemon: Spawn Chance',
+        titleColor: this.getColorScheme('pastel2')[0],
         displayLegend: true,
         legendConfig: {
             scroll: true,
@@ -165,21 +174,5 @@ export default {
       rgba(0, 0, 0, 0.75), 
       rgba(0, 0, 0, 0)
     ); 
-  }
-  
-  .pieComponent {
-    padding: 20px;
-    border: 2px solid #bbb;
-    border-radius: 10px;
-  }
-
-  .pieChart {
-    display: inline-block;
-    vertical-align: top;
-  }
-
-  .legend {
-    display: inline-block;
-    margin: 0px 20px;
   }
 </style>

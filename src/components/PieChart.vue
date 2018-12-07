@@ -1,7 +1,8 @@
 <template>
-    <div class='pieComponent'>
-        <div class='pieChart'></div>
-        <Legend v-if='legendReady' :props='props.legendConfig'></Legend>
+    <div class='pie'>
+        <div class='pie--title' v-if='title'>{{ title }}</div>
+        <div class='pie--chart'></div>
+        <Legend class='pie--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
     </div>
 </template>
 <script>
@@ -11,7 +12,7 @@ import * as d3 from 'd3';
 import Legend from './Legend';
 
 export default {
-    name: 'piechart',
+    name: 'PieChart',
     components: { Legend },
     props: {
         props: VueTypes.shape({
@@ -26,6 +27,9 @@ export default {
             grouping: VueTypes.bool,
             groupingThreshold: VueTypes.number,
             colorscheme: VueTypes.array,
+            title: VueTypes.string,
+            titleSize: VueTypes.string,
+            titleColor: VueTypes.string,
             displayLegend: VueTypes.bool,
             legendConfig: VueTypes.object
         }),
@@ -35,11 +39,14 @@ export default {
         arcPadding: VueTypes.number.def(0),
         grouping: VueTypes.bool.def(false),
         colorscheme: VueTypes.array.def(['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0', '#f0027f', '#bf5b17', '#666666']),
+        titleSize: VueTypes.string.def('2em'),
+        titleColor: VueTypes.string.def('black'),
         displayLegend: VueTypes.bool.def(true),
         legendConfig: VueTypes.object.def({})
     },
     data() {
         return {
+            title: '',
             items: [],
             legendData: {
                 labels: [],
@@ -81,13 +88,23 @@ export default {
                 this.groupItems();
             }
 
+            if (this.title) {
+                let titleSize = this.props.titleSize || this.titleSize;
+                let titleColor = this.props.titleColor || this.titleColor;
+
+                d3.select(this.$el)
+                    .select('.pie--title')
+                    .style('font-size', titleSize)
+                    .style('color', titleColor);
+            }
+
             let sum = 0;
             let tooltipTimerID = 0;
             let color = d3.scaleOrdinal(colorscheme);
             let size = this.props.outerRadius * 2 + arcPadding * 2 + strokeWidth * 2;
 
             let svg = d3.select(this.$el)
-                .select('.pieChart')
+                .select('.pie--chart')
                 .append('svg')
                 .attr('width', size)
                 .attr('height', size);
@@ -117,36 +134,34 @@ export default {
                 .append('g')
                 .attr('id', (sct, i) => 'sector' + i)
                 .on('click', (sct, i) => {
-                    d3.selectAll('.pieTooltip').remove();
+                    d3.selectAll('.pie--chart__tooltip').remove();
                     if (tooltipTimerID) {
                         clearTimeout(tooltipTimerID);
                         tooltipTimerID = 0;
                     }
 
                     let tooltip = d3.select(this.$el)
-                        .select('.pieChart')
+                        .select('.pie--chart')
                         .append('div')
-                        .attr('class', 'pieTooltip')
+                        .attr('class', 'pie--chart__tooltip')
                         .style('left', d3.event.pageX + 'px')
                         .style('top', d3.event.pageY + 'px')
                         .style('display', 'block');
 
                     tooltip.append('div')
-                        .attr('class', 'pieTooltipLabel')
+                        .attr('class', 'pie--chart__label')
                         .text(sct.data[this.props.labelKey]);
 
                     tooltip.append('div')
-                        .attr('class', 'pieTooltipValue')
                         .text(this.roundValue(sct.value));
 
                     tooltip.append('div')
-                        .attr('class', 'pieTooltipPercent')
                         .text(this.toPercent(sct.value, sum));
                 })
                 .on('mouseout', () => {
                     if (!tooltipTimerID) {
                         tooltipTimerID = setTimeout(() => {
-                            d3.selectAll('.pieTooltip').remove();
+                            d3.selectAll('.pie--chart__tooltip').remove();
                         }, 1000)
                     }
                 })
@@ -214,11 +229,29 @@ export default {
     },
     mounted() {
         this.updateData();
+        this.title = this.props.title || this.title;
     }
 }
 </script>
 <style>
-.pieTooltip {
+.pie {
+    padding: 20px;
+    border: 2px solid #bbb;
+    border-radius: 10px;
+}
+
+.pie--title {
+    width: 100%;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.pie--chart {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.pie--chart__tooltip {
     z-index: 10;
     display: none;
     position: absolute;
@@ -237,7 +270,7 @@ export default {
     box-shadow: 0 0 5px #999999;
 }
 
-.pieTooltipLabel {
+.pie--chart__label {
     font-weight: 600;
 }
 </style>
