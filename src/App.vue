@@ -6,6 +6,8 @@
     </div>
     <piechart :props='pieConfig2'></piechart>
     <piechart :props='pieConfig'></piechart>
+    <piechart :props='pieConfig4'></piechart>
+    <piechart :props='pieConfig3'></piechart>
   </div>
 </template>
 
@@ -27,13 +29,13 @@ export default {
         arcPadding: 50,
         grouping: true,
         groupingThreshold: 80,
-        colorscheme: this.getColorScheme('category10'),
+        colorscheme: this.getColorScheme('magma'),
         displayLegend: true,
         legendConfig: {
             scroll: true,
             borderVis: true,
-            borderColor: 'blue',
-            textColor: 'grey',
+            borderColor: 'purple',
+            textColor: 'purple',
             textSize: 15,
             margin: 15,
             dataSignVis: true
@@ -54,7 +56,46 @@ export default {
         legendConfig: {
             scroll: false,
             borderVis: true,
+            borderColor: 'black',
+            textColor: 'black',
+            textSize: 15,
+            margin: 0,
+            dataSignVis: true
+        }
+      },
+      pieConfig3: {
+        serverConfig: 'configs/pie_config_2.json',
+        labelKey: 'name',
+        valueKey: 'weight',
+        outerRadius: 200,
+        innerRadius: 150,
+        arcPadding: 0,
+        grouping: true,
+        groupingThreshold: 50,
+        colorscheme: this.getColorScheme('rainbow'),
+        strokeWidth: 1,
+        strokeColor: 'blue',
+        displayLegend: true,
+        legendConfig: {
+            scroll: true,
+            borderVis: true,
             borderColor: 'blue',
+            textColor: 'blue',
+            textSize: 15,
+            margin: 15,
+            dataSignVis: true
+        }
+      },
+      pieConfig4: {
+        serverConfig: 'configs/pie_config_2.json',
+        labelKey: 'name',
+        valueKey: 'spawn_chance',
+        outerRadius: 250,
+        colorscheme: this.getColorScheme('pastel2'),
+        displayLegend: true,
+        legendConfig: {
+            scroll: true,
+            borderVis: false,
             textColor: 'grey',
             textSize: 15,
             margin: 15,
@@ -102,12 +143,12 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    align-content: space-around;
     flex-wrap: wrap;
   }
 
-  #app div:not(:first-child) {
-    margin: 0 20px;
-    /*flex: 1;*/
+  #app > div:not(:first-child) {
+    margin: 20px;
   }
 
   .title {
