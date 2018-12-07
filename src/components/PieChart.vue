@@ -92,7 +92,8 @@ export default {
       let color = d3.scaleOrdinal(colorscheme);
       let size = this.props.outerRadius * 2 + arcPadding * 2;
 
-      let svg = d3.select('.pieChart')
+      let svg = d3.select(this.$el)
+        .select('.pieChart')
         .append('svg')
         .attr('width', size)
         .attr('height', size);
@@ -128,7 +129,8 @@ export default {
             tooltipTimerID = 0;
           }
 
-          let tooltip = d3.select('.pieChart')
+          let tooltip = d3.select(this.$el)
+            .select('.pieChart')
             .append('div')
             .attr('class', 'pieTooltip')
             .style('left', d3.event.pageX + 'px')

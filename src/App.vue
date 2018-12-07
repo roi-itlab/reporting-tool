@@ -2,6 +2,7 @@
   <div id='app'>
     <h1>Reporting Tool</h1>
     <hr>
+    <piechart :props='pieConfig2'></piechart>
     <piechart :props='pieConfig'></piechart>
   </div>
 </template>
@@ -28,6 +29,27 @@ export default {
         displayLegend: true,
         legendConfig: {
             scroll: true,
+            borderVis: true,
+            borderColor: 'blue',
+            textColor: 'grey',
+            textSize: 15,
+            margin: 15,
+            dataSignVis: true
+        }
+      },
+      pieConfig2: {
+        serverConfig: 'configs/pie_config_2.json',
+        labelKey: 'name',
+        valueKey: 'avg_spawns',
+        outerRadius: 100,
+        innerRadius: 0,
+        arcPadding: 0,
+        grouping: true,
+        groupingThreshold: 300,
+        colorscheme: this.getColorScheme('category10'),
+        displayLegend: true,
+        legendConfig: {
+            scroll: false,
             borderVis: true,
             borderColor: 'blue',
             textColor: 'grey',

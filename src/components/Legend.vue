@@ -58,7 +58,7 @@
         let margin = this.props.margin || this.margin
         let dataSignVis = this.props.dataSignVis | this.dataSignVis
 
-        svg = d3.select('.legend')
+        svg = d3.select(this.$el)
           .append('svg')
           .attr('class', 'legend')
           .append('g')
@@ -114,9 +114,14 @@
         }
         let height = dataText.length * textSize + margin * (dataText.length + 1)
         let width =  textPixelLength + margin * 3 + textSize
+        
         svg.attr('height', height ).attr('width', width)
-        d3.selectAll('.bg').attr('width', width).attr('height', height)
-        d3.selectAll('.legend').attr('width', width + borderWidth * 2).attr('height', height + borderWidth * 2 )
+        
+        d3.select(this.$el)
+          .selectAll('.bg').attr('width', width).attr('height', height);
+
+        d3.select(this.$el)
+          .selectAll('.legend').attr('width', width + borderWidth * 2).attr('height', height + borderWidth * 2);
       }
     },
     computed: {
