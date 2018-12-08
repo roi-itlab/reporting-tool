@@ -15,8 +15,8 @@ export default {
             textColor: VueTypes.string,
             legendDataColors: VueTypes.array,
             legendDataLabels: VueTypes.array,
-            borderWidth: VueTypes.bool,
-            margin: VueTypes.integer,
+            borderWidth: VueTypes.integer,
+            padding: VueTypes.integer,
             dataSignVis: VueTypes.bool,
         }).def({}).loose,
 
@@ -25,7 +25,7 @@ export default {
         textSize: VueTypes.integer.def(15),
         textColor: VueTypes.string.def('black'),
         borderWidth: VueTypes.integer.def(2),
-        margin: VueTypes.number.def(8),
+        padding: VueTypes.number.def(8),
         dataSignVis: VueTypes.bool.def(false),
     },
     name: 'Legend',
@@ -57,7 +57,7 @@ export default {
             let textColor = this.props.textColor || this.textColor;
             let borderWidth = this.props.borderWidth || this.borderWidth;
             let borderColor = this.props.borderColor || this.borderColor;
-            let margin = this.props.margin || this.margin;
+            let padding = this.props.padding || this.padding;
             let dataSignVis = this.props.dataSignVis | this.dataSignVis;
 
             svg = d3.select(this.$el)
@@ -70,7 +70,7 @@ export default {
                 svg.append('rect')
                     .attr('stroke', borderColor)
                     .attr('class', 'bg')
-                    .attr('height', textSize * dataText.length + margin * dataText.length + 2 * borderWidth)
+                    .attr('height', textSize * dataText.length + padding * dataText.length + 2 * borderWidth)
                     .attr('fill-opacity', 0.0)
                     .attr("transform", () => {
                         return "translate(" + borderWidth + "," +
@@ -87,7 +87,7 @@ export default {
                     .enter().append("rect")
                     .attr('width', textSize)
                     .attr('height', textSize)
-                    .attr('m', margin)
+                    .attr('m', padding)
                     .attr('fill', d => d)
                     .attr("transform", (d, i, nodes) => {
                         return "translate(" + (+nodes[i].getAttribute('m')) +
@@ -103,7 +103,7 @@ export default {
                 .attr('class', 'text')
                 .attr('fill', textColor)
                 .attr('size', textSize)
-                .attr('m', margin)
+                .attr('m', padding)
                 .text(d => d)
                 .attr('l', (d, i, nodes) => nodes[i].getComputedTextLength())
                 .attr("transform", (d, i, nodes) => {
@@ -121,9 +121,9 @@ export default {
                 if (+text.getAttribute('l') > textPixelLength)
                     textPixelLength = +text.getAttribute('l');
             }
-            let height = dataText.length * textSize + margin *
+            let height = dataText.length * textSize + padding *
                 (dataText.length + 1);
-            let width = textPixelLength + margin * 3 + textSize;
+            let width = textPixelLength + padding * 3 + textSize;
 
             svg.attr('height', height)
                 .attr('width', width);

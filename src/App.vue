@@ -18,7 +18,7 @@ import Legend from './components/Legend'
 export default {
   name: 'app',
   components: {PieChart, Legend},
-  data () {
+  data() {
     return {
       pieConfig: {
         serverConfig: 'configs/pie_config_2.json',
@@ -39,7 +39,7 @@ export default {
             borderColor: 'purple',
             textColor: 'purple',
             textSize: 15,
-            margin: 15,
+            padding: 15,
             dataSignVis: true
         }
       },
@@ -64,7 +64,7 @@ export default {
             borderColor: 'black',
             textColor: 'black',
             textSize: 15,
-            margin: 0,
+            padding: 0,
             dataSignVis: true
         }
       },
@@ -89,7 +89,7 @@ export default {
             borderColor: 'blue',
             textColor: 'blue',
             textSize: 15,
-            margin: 15,
+            padding: 15,
             dataSignVis: true
         }
       },
@@ -107,7 +107,7 @@ export default {
             borderVis: false,
             textColor: 'grey',
             textSize: 15,
-            margin: 15,
+            padding: 15,
             dataSignVis: true
         }
       }

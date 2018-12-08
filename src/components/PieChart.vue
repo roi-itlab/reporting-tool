@@ -38,7 +38,7 @@ export default {
         strokeColor: VueTypes.string.def('black'),
         arcPadding: VueTypes.number.def(0),
         grouping: VueTypes.bool.def(false),
-        colorscheme: VueTypes.array.def(['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0', '#f0027f', '#bf5b17', '#666666']),
+        colorscheme: VueTypes.array.def(d3.schemeSet1),
         titleSize: VueTypes.string.def('2em'),
         titleColor: VueTypes.string.def('black'),
         displayLegend: VueTypes.bool.def(true),
