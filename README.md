@@ -89,7 +89,7 @@ That's it!
 | dataSignVis |  `bool`   |    No    |    `false`    | Specifies whether to show the color boxes             |
 | padding     | `integer` |    No    |      `8`      | Padding inside the legend, in pixels                  |
 | scroll      |  `bool`   |    No    |    `false`    | Specifies whether the legend should be scrollable     |
-| alignment   | `string`  |    No    |    `right`    | Positioning of the legend: top, bottom, right or left |
+| alignment   | `string`  |    No    |   `'right'`   | Positioning of the legend: top, bottom, right or left |
 | borderVis   |  `bool`   |    No    |    `false`    | Specifies whether the legend should have a border     |
 | borderColor | `string`  |    No    |    `'red'`    | Color of the legend's border                          |
 | borderWidth | `integer` |    No    |      `2`      | Width of the legend's border, in pixels               |
