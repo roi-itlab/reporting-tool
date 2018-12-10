@@ -1,8 +1,10 @@
 <template>
     <div class='pie'>
         <div class='pie--title' v-if='title'>{{ title }}</div>
-        <div class='pie--chart'></div>
-        <Legend class='pie--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
+        <div class='pie--flex' :class='{ "pie--flex--vertical": flexStyle }'>
+            <div class='pie--chart'></div>
+            <Legend class='pie--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
+        </div>
     </div>
 </template>
 <script>
@@ -230,6 +232,24 @@ export default {
     mounted() {
         this.updateData();
         this.title = this.props.title || this.title;
+    },
+    computed: {
+        flexStyle() {
+            let align = this.props.legendConfig.alignment;
+            if (typeof align === 'string' || align instanceof String) {
+                if (align.localeCompare(
+                        'top',
+                        'en', { sensitivity: 'base' }) === 0 ||
+                    align.localeCompare(
+                        'bottom',
+                        'en', { sensitivity: 'base' }) === 0
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
 </script>
@@ -238,6 +258,15 @@ export default {
     padding: 20px;
     border: 2px solid #bbb;
     border-radius: 10px;
+}
+
+.pie--flex {
+    display: flex;
+    align-items: center;
+}
+
+.pie--flex--vertical {
+    flex-direction: column;
 }
 
 .pie--title {

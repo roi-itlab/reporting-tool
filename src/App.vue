@@ -4,10 +4,10 @@
       <h1>Reporting Tool</h1>
       <hr>
     </div>
-    <PieChart :props='pieConfig2'></PieChart>
     <PieChart :props='pieConfig'></PieChart>
-    <PieChart :props='pieConfig4'></PieChart>
+    <PieChart :props='pieConfig2'></PieChart>
     <PieChart :props='pieConfig3'></PieChart>
+    <PieChart :props='pieConfig4'></PieChart>
   </div>
 </template>
 
@@ -35,6 +35,7 @@ export default {
         displayLegend: true,
         legendConfig: {
             scroll: true,
+            alignment: 'right',
             borderVis: true,
             borderColor: 'purple',
             textColor: 'purple',
@@ -60,6 +61,7 @@ export default {
         displayLegend: true,
         legendConfig: {
             scroll: false,
+            alignment: 'top',
             borderVis: true,
             borderColor: 'black',
             textColor: 'black',
@@ -85,6 +87,7 @@ export default {
         displayLegend: true,
         legendConfig: {
             scroll: true,
+            alignment: 'left',
             borderVis: true,
             borderColor: 'blue',
             textColor: 'blue',
@@ -104,6 +107,7 @@ export default {
         displayLegend: true,
         legendConfig: {
             scroll: true,
+            // alignment: 'bottom',
             borderVis: false,
             textColor: 'grey',
             textSize: 15,

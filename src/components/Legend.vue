@@ -1,5 +1,5 @@
 <template>
-    <div class='legendWrapper' :style='style'>
+    <div class='legend-wrapper' :style='style'>
     </div>
 </template>
 <script>
@@ -35,7 +35,7 @@ export default {
     methods: {
         createSvg() {
             if (!this.props.legendDataLabels) {
-                let svg = d3.select('.legendWrapper')
+                let svg = d3.select('.legend-wrapper')
                     .append('svg')
                     .append('g')
                     .attr("class", "legendTable")
@@ -142,9 +142,31 @@ export default {
     computed: {
         style() {
             let style = {};
+            let align = this.props.alignment;
             if (this.props.maxHeight) {
                 style['max-height'] = this.props.maxHeight;
                 style['padding-right'] = '20px';
+            }
+            if (typeof align === 'string' || align instanceof String) {
+                if (align.localeCompare(
+                        'top',
+                        'en', { sensitivity: 'base' }) === 0) {
+                    style['margin'] = '0 20px 20px 20px';
+                    style['order'] = '-1';
+                } else if (align.localeCompare(
+                        'right',
+                        'en', { sensitivity: 'base' }) === 0) {
+                    style['margin'] = '0 20px';
+                } else if (align.localeCompare(
+                        'bottom',
+                        'en', { sensitivity: 'base' }) === 0) {
+                    style['margin'] = '20px 20px 0 20px';
+                } else if (align.localeCompare(
+                        'left',
+                        'en', { sensitivity: 'base' }) === 0) {
+                    style['margin'] = '0 20px';
+                    style['order'] = '-1';
+                }
             }
             return style;
         }
@@ -152,7 +174,7 @@ export default {
 }
 </script>
 <style>
-.legendWrapper {
+.legend-wrapper {
     display: inline-block;
     margin: 0 20px;
     overflow-y: auto;
