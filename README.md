@@ -86,11 +86,12 @@ That's it!
 
 | Parameter   |   Type    | Required | Default Value | Description                                       |
 | :---------- | :-------: | :------: | :-----------: | :------------------------------------------------ |
-| dataSignVis |  `bool`   |    No    |    `false`    | Specifies whether to show the color boxes         |
-| padding     | `integer` |    No    |      `8`      | Padding inside the legend, in pixels              |
-| scroll      |  `bool`   |    No    |    `false`    | Specifies whether the legend should be scrollable |
-| borderVis   |  `bool`   |    No    |    `false`    | Specifies whether the legend should have a border |
-| borderColor | `string`  |    No    |    `'red'`    | Color of the legend's border                      |
-| borderWidth | `integer` |    No    |      `2`      | Width of the legend's border, in pixels           |
-| textColor   | `string`  |    No    |   `'black'`   | Font color                                        |
-| textSize    | `integer` |    No    |     `15`      | Size of the font and the color boxes, in pixels   |
+| dataSignVis |  `bool`   |    No    |    `false`    | Specifies whether to show the color boxes             |
+| padding     | `integer` |    No    |      `8`      | Padding inside the legend, in pixels                  |
+| scroll      |  `bool`   |    No    |    `false`    | Specifies whether the legend should be scrollable     |
+| alignment   | `string`  |    No    |    `right`    | Positioning of the legend: top, bottom, right or left |
+| borderVis   |  `bool`   |    No    |    `false`    | Specifies whether the legend should have a border     |
+| borderColor | `string`  |    No    |    `'red'`    | Color of the legend's border                          |
+| borderWidth | `integer` |    No    |      `2`      | Width of the legend's border, in pixels               |
+| textColor   | `string`  |    No    |   `'black'`   | Font color                                            |
+| textSize    | `integer` |    No    |     `15`      | Size of the font and the color boxes, in pixels       |
