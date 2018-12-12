@@ -16,17 +16,16 @@ export default {
             legendDataColors: VueTypes.array,
             legendDataLabels: VueTypes.array,
             borderWidth: VueTypes.integer,
-            padding: VueTypes.integer,
-            dataSignVis: VueTypes.bool,
+            alignment: VueTypes.string,
+            padding: VueTypes.integer
         }).def({}).loose,
-
+        alignment: VueTypes.string.def('right'),
         borderVis: VueTypes.bool.def(false),
         borderColor: VueTypes.string.def('red'),
         textSize: VueTypes.integer.def(15),
         textColor: VueTypes.string.def('black'),
         borderWidth: VueTypes.integer.def(2),
-        padding: VueTypes.number.def(8),
-        dataSignVis: VueTypes.bool.def(false),
+        padding: VueTypes.number.def(12)
     },
     name: 'Legend',
     mounted() {
@@ -58,7 +57,7 @@ export default {
             let borderWidth = this.props.borderWidth || this.borderWidth;
             let borderColor = this.props.borderColor || this.borderColor;
             let padding = this.props.padding || this.padding;
-            let dataSignVis = this.props.dataSignVis | this.dataSignVis;
+            let dataSignVis = true;
 
             svg = d3.select(this.$el)
                 .append('svg')
@@ -96,34 +95,34 @@ export default {
                     });
             }
 
+            let maxTextWidth = 0;
             svg.selectAll('.text')
                 .data(dataText)
                 .enter()
                 .append('text')
                 .attr('class', 'text')
                 .attr('fill', textColor)
-                .attr('size', textSize)
+                .attr('font-size', textSize)
                 .attr('m', padding)
                 .text(d => d)
-                .attr('l', (d, i, nodes) => nodes[i].getComputedTextLength())
+                .attr('l', (d, i, nodes) => {
+                    if (nodes[i].getComputedTextLength() > maxTextWidth) {
+                        maxTextWidth = nodes[i].getComputedTextLength();
+                    }
+                    return nodes[i].getComputedTextLength();
+                })
                 .attr("transform", (d, i, nodes) => {
                     let x = (+nodes[i].getAttribute('m') * 2) +
-                        (+nodes[i].getAttribute('size'));
+                        (+nodes[i].getAttribute('font-size'));
                     let y = (+nodes[i].getAttribute('m')) * (i + 1) +
-                        (+nodes[i].getAttribute('size')) * i +
-                        (+nodes[i].getAttribute('size'));
+                        (+nodes[i].getAttribute('font-size')) * i +
+                        (+nodes[i].getAttribute('font-size'));
                     return "translate(" + x + ',' + y + ")";
                 });
 
-            let texts = document.getElementsByClassName('text');
-            let textPixelLength = 0;
-            for (let text of texts) {
-                if (+text.getAttribute('l') > textPixelLength)
-                    textPixelLength = +text.getAttribute('l');
-            }
             let height = dataText.length * textSize + padding *
                 (dataText.length + 1);
-            let width = textPixelLength + padding * 3 + textSize;
+            let width = maxTextWidth + padding * 3 + textSize;
 
             svg.attr('height', height)
                 .attr('width', width);
@@ -142,7 +141,7 @@ export default {
     computed: {
         style() {
             let style = {};
-            let align = this.props.alignment;
+            let align = this.props.alignment || this.alignment;
             if (this.props.maxHeight) {
                 style['max-height'] = this.props.maxHeight;
                 style['padding-right'] = '20px';
@@ -151,20 +150,20 @@ export default {
                 if (align.localeCompare(
                         'top',
                         'en', { sensitivity: 'base' }) === 0) {
-                    style['margin'] = '0 20px 20px 20px';
+                    style['margin-bottom'] = '20px';
                     style['order'] = '-1';
                 } else if (align.localeCompare(
                         'right',
                         'en', { sensitivity: 'base' }) === 0) {
-                    style['margin'] = '0 20px';
+                    style['margin-left'] = '20px';
                 } else if (align.localeCompare(
                         'bottom',
                         'en', { sensitivity: 'base' }) === 0) {
-                    style['margin'] = '20px 20px 0 20px';
+                    style['margin-top'] = '20px';
                 } else if (align.localeCompare(
                         'left',
                         'en', { sensitivity: 'base' }) === 0) {
-                    style['margin'] = '0 20px';
+                    style['margin-right'] = '20px';
                     style['order'] = '-1';
                 }
             }
@@ -176,7 +175,6 @@ export default {
 <style>
 .legend-wrapper {
     display: inline-block;
-    margin: 0 20px;
     overflow-y: auto;
     overflow-x: hidden;
 }

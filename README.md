@@ -16,7 +16,7 @@ npm run dev
 
 ## Configuration
 
-First, you need to include the chart component in **App.vue**:
+First, you need to include the chart component in **App.vue**, e.g.:
 
 ```html
 <script>
@@ -32,7 +32,7 @@ export default {
 </script>
 ```
 
-To configure the chart, you need to return a config object from the data function in **App.vue**:
+To configure the chart, you need to return a config object from the data function in **App.vue**, e.g.:
 
 ```js
 export default {
@@ -51,7 +51,7 @@ export default {
 
 ```
 
-After this, you need to insert the chart tag in `<div id='app'></div>` and bind this config:
+After this, you need to insert the chart tag in `<div id='app'></div>` and bind this config, e.g.:
 
 ```html
 <div id='app'>
@@ -61,7 +61,7 @@ After this, you need to insert the chart tag in `<div id='app'></div>` and bind 
 
 That's it!
 
-### Pie Chart Configuration
+### Pie Chart Configuration Parameters
 
 | Parameter         |   Type   | Required |  Default Value  | Description                                                                  |
 | :---------------- | :------: | :------: | :-------------: | :--------------------------------------------------------------------------- |
@@ -82,16 +82,16 @@ That's it!
 | displayLegend     |  `bool`  |    No    |     `true`      | Specifies whether to display the legend                                      |
 | legendConfig      | `object` |    No    |      `{}`       | Legend configuration (see below for details)                                 |
 
-### Legend Configuration
+### Legend Configuration Parameters
 
-| Parameter   |   Type    | Required | Default Value | Description                                                           |
-| :---------- | :-------: | :------: | :-----------: | :-------------------------------------------------------------------- |
-| dataSignVis |  `bool`   |    No    |    `false`    | Specifies whether to show the color boxes                             |
-| padding     | `integer` |    No    |      `8`      | Padding inside the legend, in pixels                                  |
-| scroll      |  `bool`   |    No    |    `false`    | Specifies whether the legend should be scrollable                     |
-| alignment   | `string`  |    No    |   `'right'`   | Positioning of the legend: `'top'`, `'bottom'`, `'right'` or `'left'` |
-| borderVis   |  `bool`   |    No    |    `false`    | Specifies whether the legend should have a border                     |
-| borderColor | `string`  |    No    |    `'red'`    | Color of the legend's border                                          |
-| borderWidth | `integer` |    No    |      `2`      | Width of the legend's border, in pixels                               |
-| textColor   | `string`  |    No    |   `'black'`   | Font color                                                            |
-| textSize    | `integer` |    No    |     `15`      | Size of the font and the color boxes, in pixels                       |
+| Parameter   |   Type    | Required |    Default Value    | Description                                                                |
+| :---------- | :-------: | :------: | :-----------------: | :------------------------------------------------------------------------- |
+| padding     | `integer` |    No    |         `8`         | Padding inside the legend, in pixels                                       |
+| scroll      |  `bool`   |    No    |       `false`       | Specifies whether the legend should be scrollable                          |
+| maxHeight   | `string`  |    No    |   eq. chart height  | Max height of the chart; only matters if the scroll parameter is `true`    |
+| alignment   | `string`  |    No    |      `'right'`      | Positioning of the legend: `'top'`, `'bottom'`, `'right'` or `'left'`      |
+| borderVis   |  `bool`   |    No    |       `false`       | Specifies whether the legend should have a border                          |
+| borderColor | `string`  |    No    |       `'red'`       | Color of the legend's border                                               |
+| borderWidth | `integer` |    No    |         `2`         | Width of the legend's border, in pixels                                    |
+| textColor   | `string`  |    No    |      `'black'`      | Font color                                                                 |
+| textSize    | `integer` |    No    |        `15`         | Size of the font and the color boxes, in pixels                            |

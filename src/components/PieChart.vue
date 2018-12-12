@@ -1,6 +1,6 @@
 <template>
     <div class='pie'>
-        <div class='pie--title' v-if='title'>{{ title }}</div>
+        <div class='pie--title' v-if='title' :style=titleStyle>{{ title }}</div>
         <div class='pie--flex' :class='{ "pie--flex--vertical": flexStyle }'>
             <div class='pie--chart'></div>
             <Legend class='pie--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
@@ -91,6 +91,7 @@ export default {
                 this.groupItems();
             }
 
+            this.title = this.props.title || this.title;
             if (this.title) {
                 let titleSize = this.props.titleSize || this.titleSize;
                 let titleColor = this.props.titleColor || this.titleColor;
@@ -198,7 +199,7 @@ export default {
                 }
                 this.props.legendConfig.legendDataColors = this.legendData.colors;
                 this.props.legendConfig.legendDataLabels = this.legendData.labels;
-                if (this.props.legendConfig.scroll) {
+                if (this.props.legendConfig.scroll && !this.props.legendConfig.maxHeight) {
                     this.props.legendConfig.maxHeight = size + 'px';
                 }
                 this.legendReady = true;
@@ -234,7 +235,6 @@ export default {
     },
     mounted() {
         this.updateData();
-        this.title = this.props.title || this.title;
     },
     computed: {
         flexStyle() {
@@ -252,17 +252,20 @@ export default {
             }
 
             return false;
+        },
+        titleStyle() {
+            let titleSize = this.props.titleSize || this.titleSize;
+            let titleColor = this.props.titleColor || this.titleColor;
+
+            return {
+                'font-size': titleSize,
+                'color': titleColor
+            };
         }
     }
 }
 </script>
 <style>
-.pie {
-    padding: 20px;
-    border: 2px solid #bbb;
-    border-radius: 10px;
-}
-
 .pie--flex {
     display: flex;
     align-items: center;
