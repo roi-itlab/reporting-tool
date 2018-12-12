@@ -40,6 +40,7 @@ export default {
         strokeColor: VueTypes.string.def('black'),
         arcPadding: VueTypes.number.def(0),
         grouping: VueTypes.bool.def(false),
+        groupingThreshold: VueTypes.number.def(0),
         colorscheme: VueTypes.array.def(d3.schemeSet1),
         titleSize: VueTypes.string.def('2em'),
         titleColor: VueTypes.string.def('black'),
@@ -212,11 +213,13 @@ export default {
         groupItems() {
             let value = 0;
             let label = 'Others (< ' + this.props.groupingThreshold + ')';
+            let groupingThreshold = this.props.groupingThreshold ||
+                this.groupingThreshold;
 
             for (let i = this.items.length - 1; i >= 0; i--) {
                 if (
                     parseFloat(this.items[i][this.props.valueKey]) <
-                    parseFloat(this.props.groupingThreshold)
+                    parseFloat(groupingThreshold)
                 ) {
                     value += parseFloat(this.items[i][this.props.valueKey]);
                     this.items.splice(i, 1);
