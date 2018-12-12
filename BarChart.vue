@@ -1,6 +1,6 @@
 <template>
   <div class="barchart">
-     <Legend v-if='legendReady' :props='props.legendConfig'></Legend>
+     <Legend  class='bar--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
   </div>
 </template>
 
@@ -38,8 +38,7 @@ export default {
       color_bar: VueTypes.string,
       width_bar: VueTypes.number,
       displayLegend: VueTypes.bool,
-      legendConfig: VueTypes.object,
-      dataSignVis: VueTypes.bool
+      legendConfig: VueTypes.object
     }).def({}),
 
     width_chart: VueTypes.number.def(1100),
@@ -67,8 +66,7 @@ export default {
     width_bar: VueTypes.number.def(3.5),
     distance_between_bars: VueTypes.number.def(3),
     displayLegend: VueTypes.bool.def(true),
-    legendConfig: VueTypes.object.def({}),
-    dataSignVis: VueTypes.bool.def(true)
+    legendConfig: VueTypes.object.def({})
 },
 data: function(){
   return {
@@ -134,12 +132,10 @@ data: function(){
    let map= d3.json("http://localhost:5000/api/posts",function(error,data){
         console.log(error);
       });
-      console.log(map);
     map
     .then(data=>{toRunDraw(data);return data;})
     .then();
   const toRunDraw=(data)=>{
-    console.log(data);    
     var dataset = data.map(function(d) {return d.score;});
     var crimesdata = [{"name":"DUI-LIQUOR","score":9919},{"name":"CHILD-OTHER","score":2385},
     {"name":"SEXOFF-OTHER","score":1502},{"name":"BURGLARY-FORCE-RES","score":15909},
@@ -147,10 +143,6 @@ data: function(){
     var dataset2 = crimesdata.map(function(d) {return d.score;});
     //get for axis x data
     var nameset  = data.map(function(d) {return d.name;});
-    console.log(dataset);
-    console.log(dataset2);
-    console.log(dataset.length);
-    console.log(dataset2.length);
      // Sizing variables for our chart. These are saved as variables as they will be used in calculations.
     chartWidth= chartWidthRect-100;
     chartHeight=  chartHeightRect - 100;

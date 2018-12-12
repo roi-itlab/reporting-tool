@@ -1,7 +1,7 @@
 <template>
 <div>
   <svg :width= "width_svg" :height="height_svg" class="groupedBar"></svg>
-     <Legend v-if='legendReady' :props='props.legendConfig'></Legend>
+     <Legend class='groupbar--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
 </div>
 </template>
 <script>
@@ -14,6 +14,7 @@ export default {
   components: {Legend},
   props: {
     props: VueTypes.shape({
+      colorscheme: VueTypes.array,
       width_chart: VueTypes.number,
       height_chart: VueTypes.number,
       margin: VueTypes.object,
@@ -44,9 +45,10 @@ export default {
       width_bar: VueTypes.number,
       displayLegend: VueTypes.bool,
       legendConfig: VueTypes.object,
-      dataSignVis: VueTypes.bool
+
     }).def({}),
 
+    colorscheme: VueTypes.array.def(d3.schemeSet1),
     width_chart: VueTypes.number.def(960),
     height_chart: VueTypes.number.def(500),
     margin: VueTypes.object.def(()=> { return { top: 20, right: 20, bottom: 30, left: 40 }}),
@@ -73,12 +75,10 @@ export default {
     thickness_horizontal_lines: VueTypes.number.def(0.5),
     color_vertical_lines_grid: VueTypes.string.def("#6789ab"),
     color_horizontal_lines_grid: VueTypes.string.def("#6789ab"),
-    color_bar: VueTypes.string.def("green"),
     width_bar: VueTypes.number.def(3.5),
     distance_between_bars: VueTypes.number.def(3),
     displayLegend: VueTypes.bool.def(true),
-    legendConfig: VueTypes.object.def({}),
-    dataSignVis: VueTypes.bool.def(true)
+    legendConfig: VueTypes.object.def({})
 },
 data: function(){
   return {
@@ -87,16 +87,14 @@ data: function(){
       color_legend :[]
       },
     legendReady: false,
-    dataSignVis: false,
     width_svg: 0,
-    height_svg:0,
-    read_name_legend :[]
-
+    height_svg:0
   }
 },
  mounted: function(){
 
-  let width_chart = this.props.width_chart || this.width_chart;
+   let colorscheme = this.props.colorscheme || this.colorscheme;
+   let width_chart = this.props.width_chart || this.width_chart;
    let height_chart  = this.props.height_chart || this.height_chart;
    let margin=this.props.margin || this.margin;
    let color_chart = this.props.color_chart || this.color_chart;
@@ -122,7 +120,6 @@ data: function(){
    let thickness_horizontal_lines = this.props.thickness_horizontal_lines || this.thickness_horizontal_lines;
    let color_vertical_lines_grid = this.props.color_vertical_lines_grid || this.color_vertical_lines_grid;
    let color_horizontal_lines_grid = this.props.color_horizontal_lines_grid || this.color_horizontal_lines_grid;
-   let color_bar = this.props.color_bar || this.color_bar;
    let width_bar = this.props.width_bar || this.width_bar;
    let distance_between_bars = this.props.distance_between_grid_lines || this.distance_between_bars;
    let legendConfig = this.props.legendConfig || this.legendConfig;
@@ -135,7 +132,6 @@ data: function(){
   
    let dbb;
    let tooltipTimerID = 0;
-   console.log(this.read_name_legend);
     this.legendData.name_legend = ["Under 5 Years","5 to 13 Years","14 to 17 Years","18 to 24 Years","25 to 44 Years","45 to 64 Years","65 Years and Over"].reverse();
     this.legendData.color_legend = ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628"].reverse();
    if (this.props.legendConfig === undefined) {
@@ -174,21 +170,17 @@ data: function(){
     var y = d3.scaleLinear()
         .rangeRound([height, 0]);
 
-    var  color = ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628","#f781bf","#999999"];
-
     var z = d3.scaleOrdinal()
-        .range(color);    
+        .range(colorscheme);    
     
 
     let map= d3.json("http://localhost:5002/api/posts",function(error,data){
         console.log(error);
       });
-      console.log(map);
     map
     .then(data=>{toRunDraw(data);return data;})
     .then();
       const toRunDraw=(data)=>{
-      console.log(data);
       var columns = d3.keys(data[0]);
       //выводим все атрибуты
       var keys = columns.slice(2.5);
