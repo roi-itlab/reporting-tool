@@ -1,8 +1,8 @@
 <template>
   <div class='bubble'>
     <div class='bubble--title' v-if='title'>{{title}}</div>
+    <button class="glo" @click="resetShowDiagram">ResetZoom</button>
     <div class='bubble--flex' :class='{ "bubble--flex--vertical": flexStyle }'>
-    <!--<button class="btn" @click="showDiagram">сброс</button>-->
       <div class="bubbleChart"> </div>
       <Legend class='bubble--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
     </div>
@@ -154,6 +154,12 @@ methods:{
       this.items = response.data[0];
       this.showDiagram();
     })
+  },
+  resetShowDiagram() {
+    if(d3.select(this.$el).select(".bubbleChart"))
+      d3.select(this.$el).select(".bubbleChart").selectAll("svg").remove();
+
+    this.showDiagram();
   },
   showDiagram: function(){
     // удаление svg элемента если он сущестувует
@@ -486,6 +492,27 @@ methods:{
   }
   .bubble /deep/ .bubbleChart {
     vertical-align: top;
+}
+
+.bubble /deep/ button.glo{
+ color:#00c6ff;
+ padding: 10px 20px;
+ width:150px;
+ text-decoration:none;
+ text-align:center;
+ margin:20px auto;
+ display: block;
+ background-image: linear-gradient(to left,transparent,transparent 50%,#00c6ff 50%,#00c6ff);
+ background-position: 100% 0;
+ background-size: 200% 100%;
+ transition: all .25s ease-in;
+ font: 400 18px tahoma;
+ border: 1px solid #00C6FF;
+ cursor:pointer;
+}
+.bubble /deep/ button.glo:hover {
+background-position: 0 0;
+color:#fff;
 }
 
 
