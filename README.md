@@ -1,9 +1,5 @@
 # Reporting Tool
 
-> The pie chart component
-
-![Screenshot](src/assets/screenshot.png)
-
 ## Build Setup
 
 ``` bash
