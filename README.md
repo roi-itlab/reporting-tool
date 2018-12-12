@@ -74,7 +74,7 @@ That's it!
 | strokeColor       | `string` |    No    |    `'black'`    | Color of the sector borders                                  |
 | arcPadding        | `number` |    No    |       `0`       | Specifies how much sectors will move apart from the center   |
 | grouping          |  `bool`  |    No    |     `false`     | Specifies whether the sectors will be grouped or not         |
-| groupingThreshold | `number` |    No    |        —        | Value below which sectors will be merged together            |
+| groupingThreshold | `number` |    No    |       `0`       | Value below which sectors will be merged together            |
 | colorscheme       | `array`  |    No    | `d3.schemeSet1` | Specifies sector colors                                      |
 | title             | `string` |    No    |      `''`       | Title of the chart                                           |
 | titleSize         | `string` |    No    |     `'2em'`     | Font size of the chart title                                 |
