@@ -1,5 +1,10 @@
 <template>
-    <div id="lineChart"></div>
+    <div class="lineChart">
+        <div class='line--flex' :class='{ "pie--flex--vertical": flexStyle }'>
+            <div class='line--chart'></div>
+            <Legend class='line--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -11,8 +16,8 @@ import PostServices from '@/services/PostsService'
 export default {
   components: {Legend},
   props: {
-
     props: VueTypes.shape({
+      serverConfig: VueTypes.string,
       backgroundColor: VueTypes.string,
       width: VueTypes.number,
       height: VueTypes.number,
@@ -48,7 +53,9 @@ export default {
       borderWidth: VueTypes.numbe,
       dataXPath: VueTypes.string,
       dataYPath: VueTypes.array,
-      backgroundColor: VueTypes.string
+      backgroundColor: VueTypes.string,
+      displayLegend: VueTypes.bool,
+      legendConfig: VueTypes.object
     }).def({}),
 
     backgroundColor: VueTypes.string.def('Gainsboro'),
@@ -87,13 +94,14 @@ export default {
   },
   data: function() {
     return {
-      generalDataset: []
-
+      generalDataset: [],
+      legendReady: false
     }
   },
   name: 'LineChart',
   mounted: function() {
-    const response = PostServices.fetchQuery();
+
+    const response = PostServices.fetchQuery(this.props.serverConfig);
     response.then(result => {
       for (let j = 0; j < this.props.dataCount;++j)
       {
@@ -105,7 +113,38 @@ export default {
       this.createSvg()
     })
 
+    // setInterval(()=> {
+    //   const response = PostServices.fetchQuery(this.props.serverConfig);
+    //   this.generalDataset = []
+    //   response.then(result => {
+    //     for (let j = 0; j < this.props.dataCount; ++j) {
+    //       let temp = []
+    //       for (let d of result.data[0])
+    //         temp.push({ x: d[this.props.dataXPath], y: d[this.props.dataYPath[j]] })
+    //       this.generalDataset.push(temp)
+    //     }
+    //     d3.select(this.$el).select('.line--chart').selectAll('svg').remove();
+    //     this.createSvg();
+    //   })
+    // }, 1000);
+  },
+  computed: {
+    flexStyle() {
+      let align = this.props.legendConfig.alignment;
+      if (typeof align === 'string' || align instanceof String) {
+        if (align.localeCompare(
+          'top',
+          'en', { sensitivity: 'base' }) === 0 ||
+          align.localeCompare(
+            'bottom',
+            'en', { sensitivity: 'base' }) === 0
+        ) {
+          return true;
+        }
+      }
 
+      return false;
+    }
   },
   methods: {
     createSvg(){
@@ -202,7 +241,7 @@ export default {
       for (let i = 0; i < dataCount; ++i)
         dataset.push( d3.range(21).map(function(d) { return {"y": d3.randomUniform(1)() } }) )
 
-      svg = d3.select('#lineChart').append('svg')
+      svg = d3.select(this.$el).select('.line--chart').append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -279,6 +318,18 @@ export default {
         }
       }
 
+      svg.append('text')
+        .text('price')
+        .attr('font-size', 12)
+        .attr('y', 10)
+        .attr('x', 5)
+
+      svg.append('text')
+        .text('time')
+        .attr('font-size', 12)
+        .attr('y', height + 30)
+        .attr('x', width - 20)
+
       svg.select('.y-axis > path')
         .attr('stroke', axisYColor)
         .attr('stroke-width', axesDepth)
@@ -304,7 +355,33 @@ export default {
         .attr('font-size', symbolYSize)
 
       svg.selectAll('.grid > .tick > line').attr("stroke", gridColor)
+
+      this.legendReady = true;
+
     }
   },
 }
 </script>
+<style>
+.lineChart {
+    padding: 20px;
+    border: 2px solid #bbb;
+    border-radius: 10px;
+}
+
+.line--flex {
+    display: flex;
+    align-items: center;
+    display: inline-block;
+}
+
+.line--flex--vertical {
+    flex-direction: column;
+}
+
+.line--chart {
+    display: inline-block;
+    vertical-align: top;
+
+}
+</style>
