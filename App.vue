@@ -1,9 +1,5 @@
 <template>
   <div id="app">
-    <!-- <button type="button" @click="component='FaceDiagram'" >FaceDiagram</button>
-
-    <button type="button" @click="component='Example'">Example</button>
-    <keep-alive >   <component :is='component'  :props='bubbleConfig'> </component> </keep-alive>-->
     <BubbleChart :props='bubbleConfig'> </BubbleChart>
     <BubbleChart :props='bubbleConfig2'> </BubbleChart>
   </div>
@@ -28,8 +24,8 @@ export default {
           asixXKey: 'ID',
           radiusKey: 'Weight',
           categoryKey: 'Topic',
-          maxDiameter: 50,
-          minDiameter: 10,
+          maxDiameter: 15,
+          minDiameter: 5,
           maxZoom: 50,
           gridColor:"#000" ,
           gridWidth: 0.5,
@@ -37,17 +33,18 @@ export default {
           axisYTicks: 10,
           axisXTicks: null,
           axisWidth: 5,
-          width: null,
-          height: null,
+          width: 400,
+          height: 200,
+          title:"bubbleChart",
           colorscheme: this.getColorScheme('category10'),
-          titleColor: this.getColorScheme('category10')[7],
+          titleColor: this.getColorScheme('category10')[1],
           displayLegend: true,
           legendConfig: {
             scroll: true,
             alignment: 'left',
             borderVis: true,
             borderColor: 'purple',
-            textColor: 'purple',
+            textColor: 'black',
             textSize: 15,
             padding: 15,
             dataSignVis: true
@@ -65,11 +62,14 @@ export default {
         gridColor:"#000" ,
         gridWidth: 0.5,
         gridColorOpacity: 0.9,
+        nameAsixX:"ID",
+        nameAsixY:"Weight",
         axisYTicks: null,
-        axisXTicks: null,
+        axisXTicks: 25,
         axisWidth: 5,
         width: null,
         height: null,
+        title:"Noname",
         colorscheme: this.getColorScheme('magma'),
         titleColor: this.getColorScheme('category10')[7],
         displayLegend: true,
