@@ -74,10 +74,10 @@ export default {
   data(){
     return{
       draw:{
-        currentX:'Weight',
-        currentY:'ID',
-        currentR:'SiteID',
-        currentC:'Topic'
+        currentX:this.props.asixXKey,
+        currentY:this.props.asixYKey,
+        currentR:this.props.radiusKey,
+        currentC:this.props.categoryKey,
       },
       title: '',
       drawsKeys:[],
@@ -123,6 +123,7 @@ export default {
      let map= d3.json("../../static/data3.json",function(error,data){
           console.log(error);
         });
+
     map
       .then(data=>{
         if(getType(data) === "array")
@@ -206,8 +207,8 @@ methods:{
     let linearY = getScaleLinear(this.objData, y, h-padding.bottom - padding.top, 0);
 
     // создаем набор вертикальных линий для сетки
-    let svg = d3.select(this.$el)
-      .style("position", "relative")
+    let svg = d3.select(this.$el).select(".bubbleChart")
+      //.style("position", "relative")
       .append("svg")
       .attr("width", w)
       .attr("height", h)
@@ -254,7 +255,7 @@ methods:{
       .text("Ось Х");
 
     if (gridX) {
-      let gridLineX = d3.selectAll("g.x-axis g.tick")
+      d3.selectAll("g.x-axis g.tick")
         .append("line")
         .style("stroke",gridColor)  // указать переменную
         .style("stroke-width",gridWidth)
@@ -266,7 +267,7 @@ methods:{
     }
 
     if (gridY) {
-      let gridLineY = d3.selectAll("g.y-axis g.tick")
+       d3.selectAll("g.y-axis g.tick")
         .append("line")
         .style("stroke",gridColor)  // указать переменную
         .style("stroke-width",gridWidth)
@@ -312,8 +313,11 @@ methods:{
     /*  .attr("transform","translate(" + [d3.event.transform.x,d3.event.transform.y] + ")" + " scale(" +d3.event.transform.k+ ")");*/
       LineX.style("stroke-width",axisWidth/d3.event.transform.k);
       LineY.style("stroke-width",axisWidth/d3.event.transform.k);
-      gridLineX.style("stroke-width",gridWidth/d3.event.transform.k);
-      gridLineY.style("stroke-width",gridWidth/d3.event.transform.k);
+      d3.select(t.$el).selectAll("g.y-axis g.tick line").style("translate","( 0 ,"+0.5/d3.event.transform.k+")");
+      d3.select(t.$el).selectAll("g.tick").style("stroke-width",gridWidth/d3.event.transform.k);
+      d3.select(t.$el).selectAll("g.tick text").attr("font-size",(12/d3.event.transform.k)+"px");
+      d3.select(t.$el).selectAll("g.tick line").style("stroke-width",gridWidth/d3.event.transform.k);
+      //d3.selectall("line").style("stroke-width",gridWidth/d3.event.transform.k);
     };
 
     if (this.displayLegend) {
@@ -348,14 +352,15 @@ methods:{
    }
 
    function setText(d,elem) {
-     let textBlock = d3.select(this.$el)
+     console.log("start")
+     let textBlock = d3.select(t.$el).select(".bubbleChart")
        .append("div")
        .attr("class","textBlock")
        .style('display', 'block')
        .style('left', (d3.event.pageX + 'px'))
        .style('top', (d3.event.pageY + 'px'));
 
-        console.log(d3.event.pageX,d3.event.pageY)
+        console.log(d3.event.scroll,d3.event.pageY)
 
      textBlock.append("div")
        .text("Ось У: " + d[y]);
@@ -399,6 +404,7 @@ methods:{
   padding: 20px;
   border: 2px solid #bbb;
   border-radius: 10px;
+  display: inline-block;
 }
 .bubble /deep/ .nameText{
   "fill":white;
@@ -474,7 +480,6 @@ methods:{
     margin-bottom: 20px;
   }
   .bubble /deep/ .bubbleChart {
-    display: inline-block;
     vertical-align: top;
 }
 
