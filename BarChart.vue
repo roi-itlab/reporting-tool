@@ -64,8 +64,8 @@ export default {
     color_vertical_lines_grid: VueTypes.string.def("#6789ab"),
     color_horizontal_lines_grid: VueTypes.string.def("#6789ab"),
     color_bar: VueTypes.string.def("green"),
-    width_bar: VueTypes.number.def(3.2),
-    distance_between_bars: VueTypes.number.def(2),
+    width_bar: VueTypes.number.def(3.5),
+    distance_between_bars: VueTypes.number.def(3),
     displayLegend: VueTypes.bool.def(true),
     legendConfig: VueTypes.object.def({}),
     dataSignVis: VueTypes.bool.def(true)
@@ -117,8 +117,8 @@ data: function(){
    let chartHeight;
    let dbb;
    let tooltipTimerID = 0;
-   this.legendData.name_legend = ["Crimes 2014","Crimes 2015"];
-   this.legendData.color_legend = ["#4CBB17", "green"];
+   this.legendData.name_legend = ["Crimes 2014"]
+   this.legendData.color_legend = ["green"];
    if (this.props.legendConfig === undefined) {
      this.props.legendConfig = legendConfig;
    }
@@ -179,7 +179,7 @@ data: function(){
     var heightScalingFactor = chartHeight / getMax(dataset);
 
     //холст
-    var substr = d3.select("div")
+    var substr = d3.select(".barchart")
       .append('svg')
       .attr('width', chartWidthRect)
       .attr('height', chartHeightRect)
@@ -291,7 +291,7 @@ data: function(){
       .data(dataset)
       .enter().append("rect")
       .attr("class", "bar")
-      //Add listener for the mouseover event
+      //Add listener for the click event
       .on("click", (value,index) => {
         d3.selectAll('.barTooltip').remove();
           if (tooltipTimerID) {
@@ -343,68 +343,6 @@ data: function(){
         return (value * heightScalingFactor*0.9)
       })
       .attr('fill', color_bar);
-
-  //второй график
-    // создаем элемент g с набором столбиков
-    substr.append("g")
-    // сдвиг оси вправо
-      .attr("transform",  "translate(" + margin + ", 0)")
-      .selectAll(".bar")
-      .data(dataset2)
-      .enter().append("rect")
-      .attr("class", "bar")
-      //Add listener for the mouseover event
-      .on("click", (value,index) => {
-        d3.selectAll('.barTooltip').remove();
-          if (tooltipTimerID) {
-            clearTimeout(tooltipTimerID);
-            tooltipTimerID = 0;
-          }
-        let tooltip = d3.select('.barchart')
-            .append('div')
-            .attr('class', 'barTooltip')
-            .style('left', d3.event.pageX + 'px')
-            .style('top', d3.event.pageY + 'px')
-            .style('display', 'block');
-        tooltip.append('div')
-            .attr('class', 'barTooltipLabel')
-            .text(value);
-      })
-      .on('mouseout', () => {
-          if (!tooltipTimerID) {
-            tooltipTimerID = setTimeout(() => {
-              d3.selectAll('.barTooltip').remove();
-            }, 1000)
-          }
-        })
-       // Set the X position of the rectangle by taking the index of the current item we are creating, 
-       //multiplying it by the calculated width of each bar, and adding a padding value so we can see 
-       //some space between bars.
-      .attr('x', function (value, index) {                   
-            return (index * (chartWidth / dataset2.length)) + margin
-          })
-      // The width is dynamically calculated to have an even distribution of bars that take up the 
-      //entire width of the chart.
-      //3*padding - уменьшение толщины столбиков
-      .attr('width', (chartWidth / dataset2.length) - width_bar*margin) 
-      // Set the rectangle by subtracting the scaled height from the height of the chart 
-      //(this has to be done becuase SVG coordinates start with 0,0 at their top left corner).
-      //0.9 в y и height отвечают за то, чтобы столбик не подпирал график
-      .attr('y', function (value, index) {                    
-        return chartHeight   - (value * heightScalingFactor*0.9)
-      })
-      .transition()
-      .ease(d3.easeLinear)
-      .duration(400)
-      .delay(function (d, i) {
-             return i * 50;
-         })
-      //.attr("height", function(d) { return chartHeight - yScale(d.score) - margin; })
-      // The height is simply the value of the item in the dataset multiplied by the height scaling factor.
-      .attr('height', function (value, index) {              
-        return (value * heightScalingFactor*0.9)
-      })
-      .attr('fill', "#4CBB17");
 
    //  ищем максимум для функции
   function getMax(collection) {
