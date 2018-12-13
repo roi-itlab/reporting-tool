@@ -1,6 +1,6 @@
 <template>
     <div class='pie'>
-        <div class='chart--title' v-if='title' :style=titleStyle>{{ title }}</div>
+        <div class='pie--title' v-if='title' :style=titleStyle>{{ title }}</div>
         <div class='pie--flex' :class='{ "pie--flex--vertical": flexStyle }'>
             <div class='pie--chart'></div>
             <Legend class='pie--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
@@ -92,6 +92,15 @@ export default {
             }
 
             this.title = this.props.title || this.title;
+            if (this.title) {
+                let titleSize = this.props.titleSize || this.titleSize;
+                let titleColor = this.props.titleColor || this.titleColor;
+
+                d3.select(this.$el)
+                    .select('.pie--title')
+                    .style('font-size', titleSize)
+                    .style('color', titleColor);
+            }
 
             let sum = 0;
             let tooltipTimerID = 0;

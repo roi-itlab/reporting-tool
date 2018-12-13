@@ -1,10 +1,11 @@
 <template>
     <div class="lineChart">
-        <div class='chart--title' v-if='title' :style=titleStyle>{{ title }}</div>
+
         <div class='line--flex' :class='{ "line--flex--vertical": flexStyle }'>
             <div class='line--chart'></div>
             <Legend class='line--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
         </div>
+        <div class='line--title' v-if='title' :style=titleStyle>{{ title }}</div>
     </div>
 </template>
 <script>
@@ -22,9 +23,6 @@ export default {
             width: VueTypes.number,
             height: VueTypes.number,
             margin: VueTypes.object,
-            title: VueTypes.string,
-            titleSize: VueTypes.string,
-            titleColor: VueTypes.string,
             symbolXColor: VueTypes.string,
             symbolYColor: VueTypes.string,
             circlesRad: VueTypes.number,
@@ -58,15 +56,16 @@ export default {
             dataYPath: VueTypes.array,
             backgroundColor: VueTypes.string,
             displayLegend: VueTypes.bool,
-            legendConfig: VueTypes.object
+            legendConfig: VueTypes.object,
+			titleSize: VueTypes.string,
+			titleColor: VueTypes.string,
+			title: VueTypes.string
         }).def({}),
 
         backgroundColor: VueTypes.string.def('Gainsboro'),
         width: VueTypes.number.def(800),
         height: VueTypes.number.def(300),
-        titleSize: VueTypes.string.def('2em'),
-        titleColor: VueTypes.string.def('black'),
-        margin: VueTypes.object.def(() => { return { left: 50, right: 50, top: 50, bottom: 50 } }),
+        margin: VueTypes.object.def(() => { return { left: 30, right: 10, top: 10, bottom: 20 } }),
         symbolXColor: VueTypes.string.def('black'),
         symbolYColor: VueTypes.string.def('black'),
         circlesRad: VueTypes.number.def(5),
@@ -95,11 +94,13 @@ export default {
         gridVis: VueTypes.bool.def(false),
         areaOpacity: VueTypes.number.def(0.5),
         dataCount: VueTypes.number.def(0),
+		titleSize: VueTypes.string.def('2em'),
+		titleColor: VueTypes.string.def('black'),
         borderWidth: VueTypes.number.def(2),
     },
     data: function() {
         return {
-            title: '',
+			title: '',
             generalDataset: [],
             legendReady: false
         }
@@ -132,6 +133,10 @@ export default {
         //     this.createSvg();
         //   })
         // }, 1000);
+
+		// setInterval(()=> {
+		// 	this.updateData();
+		// }, 1000);
     },
     computed: {
         flexStyle() {
@@ -150,17 +155,68 @@ export default {
 
             return false;
         },
-        titleStyle() {
-            let titleSize = this.props.titleSize || this.titleSize;
-            let titleColor = this.props.titleColor || this.titleColor;
+		titleStyle() {
+			let titleSize = this.props.titleSize || this.titleSize;
+			let titleColor = this.props.titleColor || this.titleColor;
 
-            return {
-                'font-size': titleSize,
-                'color': titleColor
-            };
-        }
+			return {
+				'font-size': titleSize,
+				'color': titleColor
+			};
+		}
     },
     methods: {
+		// updateData(){
+		// 	const response = PostServices.fetchQuery(this.props.serverConfig);
+		// 	response.then(result => {
+		// 		for (let j = 0; j < this.props.dataCount; ++j) {
+		// 			let temp = []
+		// 			for (let d of result.data[0])
+		// 				temp.push({ x: d[this.props.dataXPath], y: d[this.props.dataYPath[j]] })
+		// 			this.generalDataset.push(temp)
+		// 		}
+		// 	})
+        //
+		// 	let width = this.props.width || this.width
+		// 	let height = this.props.height || this.height
+        //
+		// 	let maxX = d3.max(this.generalDataset[0].map(function(d) { return d.x; }));
+		// 	let minX = d3.min(this.generalDataset[0].map(function(d) { return d.x; }));
+        //
+		// 	let minY = d3.min(this.generalDataset[0].map(function(d) { return d.y; }))
+		// 	let maxY = d3.max(this.generalDataset[0].map(function(d) { return d.y; }))
+        //
+		// 	let line = d3.line()
+		// 		.x(function(d) {
+		// 			return xScale(d.x);
+		// 		})
+		// 		.y(function(d) {
+		// 			return yScale(d.y);
+		// 		})
+		// 		.curve(d3.curveMonotoneX)
+        //
+		// 	let xScale = d3.scaleLinear().domain([minX, maxX]).range([0, width])
+		// 	let yScale = d3.scaleLinear().domain([minY - Math.abs(minY * 0.1), maxY + Math.abs(maxY * 0.1)]).range([height, 0])
+        //
+		// 	let svg = d3.select(this.$el).select(".line--chart").transition()
+        //     for (let i = 0; i < this.generalDataset.length; ++i) {
+		// 		svg.select(".line" + i)   // change the line
+		// 			.duration(2000)
+		// 			.attr("d", line(this.generalDataset[i]));
+		// 		console.log(svg.select(".line" + i))
+		// 	}
+        //
+		// 	svg.select(".x-axis")
+		// 		.duration(2000)
+		// 		.call(d3.axisBottom(xScale))
+        //
+        //
+        //
+		// 	svg.select(".y-axis")
+		// 		.duration(2000)
+		// 		.call(d3.axisLeft(yScale))
+		// 	},
+
         createSvg() {
             let backgroundColor = this.props.backgroundColor || this.backgroundColor
             let width = this.props.width || this.width
@@ -194,8 +250,6 @@ export default {
             let areaOpacity = this.props.areaOpacity || this.areaOpacity
             let dataCount = this.props.dataCount || this.dataCount
             let borderWidth = this.props.borderWidth || this.borderWidth
-
-            this.title = this.props.title || this.title
 
             let maxX = d3.max(this.generalDataset[0].map(function(d) { return d.x; }));
             let minX = d3.min(this.generalDataset[0].map(function(d) { return d.x; }));
@@ -256,10 +310,8 @@ export default {
                     .curve(d3.curveMonotoneX)
             }
 
-            for (let i = 0; i < dataCount; ++i)
-                dataset.push(d3.range(21).map(function(d) { return { "y": d3.randomUniform(1)() } }))
-
             svg = d3.select(this.$el).select('.line--chart').append('svg')
+                .attr('class', 'line--svg')
                 .attr('width', width + margin.left + margin.right)
                 .attr('height', height + margin.top + margin.bottom)
                 .append('g')
@@ -312,21 +364,24 @@ export default {
                         .attr("opacity", areaOpacity)
                         .attr("d", area)
                 }
+
                 if (lineVis) {
                     svg.append("path")
-                        .datum(this.generalDataset[i])
                         .attr("class", "line" + i)
                         .attr("fill", "none")
                         .attr("stroke-width", lineDepth)
                         .attr("stroke", linesColor[i])
-                        .attr("d", line)
+                        .attr("d", line(this.generalDataset[i]))
+
                 }
                 if (circlesVis) {
                     svg.selectAll(".dot" + i)
                         .data(this.generalDataset[i])
                         .enter().append("circle")
                         .attr("class", "dot" + i)
-                        .attr("cx", function(d, i) { return xScale(d.x) })
+                        .attr("cx", function(d, i) {
+                        	console.log(i)
+                        	return xScale(d.x) })
                         .attr("cy", function(d) { return yScale(d.y) })
                         .attr("r", circlesRad)
                         .attr("fill", circlesFillColor[i])
@@ -336,10 +391,21 @@ export default {
                 }
             }
 
+			this.title = this.props.title || this.title;
+			if (this.title) {
+				let titleSize = this.props.titleSize || this.titleSize;
+				let titleColor = this.props.titleColor || this.titleColor;
+
+				d3.select(this.$el)
+					.select('.pie--title')
+					.style('font-size', titleSize)
+					.style('color', titleColor);
+			}
+
             svg.append('text')
-                .text('price')
+                .text('price (thousand dollars)')
                 .attr('font-size', 12)
-                .attr('y', 10)
+                .attr('y', 12)
                 .attr('x', 5)
 
             svg.append('text')
@@ -374,13 +440,77 @@ export default {
 
             svg.selectAll('.grid > .tick > line').attr("stroke", gridColor)
 
-            if (this.props.legendConfig.scroll && !this.props.legendConfig.maxHeight) {
-                this.props.legendConfig.maxHeight = height + 'px';
-                this.legendReady = true;
-            }
-            else {
-                this.legendReady = true;
-            }
+            this.legendReady = true;
+
+
+			var inter = setInterval(()=> {
+				const response = PostServices.fetchQuery(this.props.serverConfig);
+				response.then(result => {
+					this.generalDataset = []
+					for (let j = 0; j < this.props.dataCount; ++j) {
+						let temp = []
+						for (let d of result.data[0])
+							temp.push({ x: d[this.props.dataXPath], y: d[this.props.dataYPath[j]] })
+						this.generalDataset.push(temp)
+					}
+				})
+
+				maxX = d3.max(this.generalDataset[0].map(function(d) { return d.x; }));
+				minX = d3.min(this.generalDataset[0].map(function(d) { return d.x; }));
+
+				minY = d3.min(this.generalDataset[0].map(function(d) { return d.y; }))
+				maxY = d3.max(this.generalDataset[0].map(function(d) { return d.y; }))
+				for (let i = 1; i < this.props.dataCount; ++i) {
+					let minTemp = d3.min(this.generalDataset[i].map(function(d) { return d.y; }))
+					let maxTemp = d3.max(this.generalDataset[i].map(function(d) { return d.y; }))
+
+
+					minY = minY < minTemp ? minY : minTemp
+					maxY = maxY > maxTemp ? maxY : maxTemp
+				}
+
+
+				xScale = d3.scaleLinear().domain([minX, maxX]).range([0, width])
+				yScale = d3.scaleLinear().domain([minY - Math.abs(minY * 0.1), maxY + Math.abs(maxY * 0.1)]).range([height, 0])
+
+
+				let svg2 = svg.transition();
+
+				for (let i = 0; i < dataCount; ++i) {
+
+					if (areaVis) {
+						svg2.select(".area" + i)
+							.duration(1000)
+							.attr("d", area(this.generalDataset[i]))
+					}
+
+					if (lineVis) {
+						svg2.select(".line" + i)
+							.duration(1000)
+							.attr("d", line(this.generalDataset[i]));
+
+					}
+					let k = 0;
+					let j = 0;
+					// if (circlesVis) {
+					// 	svg2.selectAll(".dot" + i)
+					// 		.duration(500)
+                    //
+					// 		.attr("cx", ()=> {
+					// 			if (k >= this.generalDataset[i].length) k = 0;
+					// 			return xScale(this.generalDataset[i][k++].x) })
+					// 		.attr("cy", ()=> {
+					// 			if (j >= this.generalDataset[i].length) j = 0;
+					// 			return yScale(this.generalDataset[i][j++]) })
+					// }
+				}
+				svg2.select(".x-axis")
+					.duration(1000)
+					.call(d3.axisBottom(xScale));
+				svg2.select(".y-axis")
+					.duration(1000)
+					.call(d3.axisLeft(yScale));
+			}, 3000);
         }
     },
 }
@@ -399,5 +529,10 @@ export default {
     display: inline-block;
     vertical-align: top;
 
+}
+.line--title {
+    width: 100%;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 </style>

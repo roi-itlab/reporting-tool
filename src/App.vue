@@ -4,55 +4,25 @@
             <h1>Reporting Tool</h1>
             <hr>
         </div>
-        <BarChart></BarChart>
-        <StackedBarChart :props='stackedBarChartConfig'></StackedBarChart>
-        <BubbleChart :props='bubbleChartConfig'></BubbleChart>
+        <!--<BarChart></BarChart>-->
+        <!--<BubbleChart :props='bubbleConfig'></BubbleChart>-->
         <LineChart :props='lineChartConfig'></LineChart>
-        <PieChart :props='pieChartConfig2'></PieChart>
+        <!--<PieChart :props='pieChartConfig2'></PieChart>-->
     </div>
 </template>
 <script>
 import Legend from './components/Legend'
 import BarChart from './components/BarChart'
-import StackedBarChart from './components/StackedBarChart'
 import BubbleChart from './components/BubbleChart'
 import LineChart from './components/LineChart'
 import PieChart from './components/PieChart'
 
 export default {
     name: 'app',
-    components: {
-        Legend,
-        BarChart,
-        StackedBarChart,
-        BubbleChart,
-        LineChart,
-        PieChart
-    },
+    components: { Legend, BarChart, BubbleChart, LineChart, PieChart },
     data() {
         return {
-            stackedBarChartConfig: {
-                serverConfig: 'configs/stackedBarChartDataConfig.json',
-                labelKey: 'name',
-                valueKey: 'avg_spawns',
-                width_chart: 350,
-                height_chart: 302,
-                colorscheme: this.getColorScheme('category10'),
-                title: 'Types of population in states',
-                titleColor: '#D62728',
-                displayLegend: true,
-                legendConfig: {
-                    scroll: true,
-                    alignment: 'right',
-                    borderVis: true,
-                    borderColor: '#999',
-                    textColor: 'black',
-                    textSize: 15,
-                    padding: 15,
-                    dataSignVis: true
-                }
-            },
-            bubbleChartConfig: {
+            bubbleConfig: {
                 serverConfig: 'configs/bubbleChartDataConfig.json',
                 asixYKey: 'reclong',
                 asixXKey: 'reclat',
@@ -68,9 +38,7 @@ export default {
                 axisXTicks: 0,
                 axisWidth: 5,
                 width: 600,
-                height: 363,
-                title: 'Earth Meteorite Landings',
-                titleColor: '#9467BD',
+                height: 300,
                 colorscheme: this.getColorScheme('category10'),
                 displayLegend: true,
                 legendConfig: {
@@ -86,13 +54,11 @@ export default {
             },
             lineChartConfig: {
                 serverConfig: 'configs/lineChartDataConfig.json',
-                width: 300,
-                height: 200,
-                title: 'Stock Price',
-                titleColor: '#0000aa',
+                width: 800,
+                height: 400,
                 dataXPath: 'date',
                 lineVis: true,
-                dataYPath: ['samsung', 'apple', 'yandex', 'google'],
+                dataYPath: ['sumsung', 'apple', 'yandex', 'google'],
                 dataCount: 4,
                 linesColor: ['purple', 'grey', 'yellow', 'blue', 'red'],
                 gridVis: true,
@@ -106,14 +72,16 @@ export default {
                 areaColor: ['purple', 'grey', 'yellow', 'blue'],
                 areaOpacity: 0.2,
                 gridColor: 'Gainsboro',
-                // margin: { top: 10, left: 30, right: 10, bottom: 30 },
+				title: 'Capitalization of companies',
+				titleSize: '1.5em',
+				titleColor: this.getColorScheme('magma')[7],
                 displayLegend: true,
                 legendConfig: {
                     borderVis: true,
                     alignment: 'top',
                     borderColor: 'blue',
                     textColor: 'grey',
-                    textSize: 10,
+                    textSize: 18,
                     legendDataLabels: ['samsung', 'apple', 'yandex', 'google'],
                     legendDataColors: ['purple', 'grey', 'yellow', 'blue'],
                 }
@@ -164,7 +132,7 @@ export default {
                     borderVis: true,
                     borderColor: 'black',
                     textColor: 'black',
-                    textSize: 15,
+                    textSize: 18,
                     dataSignVis: true
                 }
             },
@@ -189,7 +157,7 @@ export default {
                     borderVis: true,
                     borderColor: 'blue',
                     textColor: 'blue',
-                    textSize: 15,
+                    textSize: 18,
                     padding: 15,
                     dataSignVis: true
                 }
@@ -262,12 +230,6 @@ export default {
     padding: 20px;
     border: 2px solid #bbb;
     border-radius: 10px;
-}
-
-.chart--title {
-    width: 100%;
-    font-weight: bold;
-    margin-bottom: 20px;
 }
 
 .title {
