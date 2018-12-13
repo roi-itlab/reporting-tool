@@ -8,7 +8,7 @@
         <StackedBarChart :props='stackedBarChartConfig'></StackedBarChart>
         <BubbleChart :props='bubbleChartConfig'></BubbleChart>
         <LineChart :props='lineChartConfig'></LineChart>
-        <PieChart :props='pieChartConfig2'></PieChart>
+        <PieChart :props='pieChartConfig'></PieChart>
     </div>
 </template>
 <script>
@@ -116,98 +116,29 @@ export default {
                     legendDataColors: ['purple', 'grey', 'yellow', 'blue'],
                 }
             },
-            pieChartConfig1: {
+            pieChartConfig: {
                 serverConfig: 'configs/pieChartDataConfig.json',
                 labelKey: 'name',
-                valueKey: 'avg_spawns',
-                outerRadius: 100,
-                innerRadius: 0,
-                arcPadding: 50,
-                grouping: true,
-                groupingThreshold: 80,
-                colorscheme: this.getColorScheme('magma'),
-                title: 'Pokemon: Average Spawns',
-                titleSize: '1.5em',
-                titleColor: this.getColorScheme('magma')[7],
-                displayLegend: true,
-                legendConfig: {
-                    scroll: true,
-                    alignment: 'right',
-                    borderVis: true,
-                    borderColor: 'purple',
-                    textColor: 'purple',
-                    textSize: 15,
-                    padding: 15,
-                    dataSignVis: true
-                }
-            },
-            pieChartConfig2: {
-                serverConfig: 'configs/pieChartDataConfig.json',
-                labelKey: 'name',
-                valueKey: 'height',
+                valueKey: 'mass',
                 outerRadius: 97,
                 innerRadius: 0,
                 arcPadding: 0,
                 grouping: true,
-                groupingThreshold: 2.5,
-                colorscheme: this.getColorScheme('blues'),
-                title: 'Pokemon: Height (in meters)',
+                groupingThreshold: 900000,
+                colorscheme: this.getColorScheme('warm'),
+                title: 'Meteorite Landings',
                 titleSize: '1.5em',
-                titleColor: this.getColorScheme('blues')[7],
-                strokeWidth: 5,
+                titleColor: this.getColorScheme('warm')[1],
+                strokeWidth: 1,
                 displayLegend: true,
                 legendConfig: {
-                    scroll: false,
+                    scroll: true,
+                    maxHeight: '220px',
                     alignment: 'top',
                     borderVis: true,
                     borderColor: 'black',
                     textColor: 'black',
                     textSize: 15,
-                    dataSignVis: true
-                }
-            },
-            pieChartConfig3: {
-                serverConfig: 'configs/pieChartDataConfig.json',
-                labelKey: 'name',
-                valueKey: 'weight',
-                outerRadius: 200,
-                innerRadius: 150,
-                arcPadding: 0,
-                grouping: true,
-                groupingThreshold: 50,
-                colorscheme: this.getColorScheme('rainbow'),
-                title: 'Pokemon: Weight (in kg)',
-                titleColor: this.getColorScheme('rainbow')[0],
-                strokeWidth: 1,
-                strokeColor: 'blue',
-                displayLegend: true,
-                legendConfig: {
-                    scroll: true,
-                    alignment: 'left',
-                    borderVis: true,
-                    borderColor: 'blue',
-                    textColor: 'blue',
-                    textSize: 15,
-                    padding: 15,
-                    dataSignVis: true
-                }
-            },
-            pieChartConfig4: {
-                serverConfig: 'configs/pieChartDataConfig.json',
-                labelKey: 'name',
-                valueKey: 'spawn_chance',
-                outerRadius: 250,
-                colorscheme: this.getColorScheme('pastel2'),
-                title: 'Pokemon: Spawn Chance',
-                titleColor: this.getColorScheme('pastel2')[0],
-                displayLegend: true,
-                legendConfig: {
-                    scroll: true,
-                    alignment: 'bottom',
-                    borderVis: false,
-                    textColor: 'grey',
-                    textSize: 15,
-                    padding: 15,
                     dataSignVis: true
                 }
             }

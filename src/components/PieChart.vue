@@ -115,7 +115,13 @@ export default {
                 .outerRadius(this.props.outerRadius);
 
             let pie = d3.pie()
-                .value(d => parseFloat(d[this.props.valueKey]))
+                .value(d => {
+                    if (isNaN(parseFloat(d[this.props.valueKey]))) {
+                        return 0;
+                    }
+                    
+                    return parseFloat(d[this.props.valueKey]);
+                })
                 .sort(null);
 
             let path = g.selectAll('path')
@@ -210,6 +216,7 @@ export default {
 
             for (let i = this.items.length - 1; i >= 0; i--) {
                 if (
+                    !isNaN(parseFloat(this.items[i][this.props.valueKey])) &&
                     parseFloat(this.items[i][this.props.valueKey]) <
                     parseFloat(groupingThreshold)
                 ) {
