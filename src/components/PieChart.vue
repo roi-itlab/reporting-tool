@@ -1,6 +1,6 @@
 <template>
     <div class='pie'>
-        <div class='pie--title' v-if='title'>{{ title }}</div>
+        <div class='pie--title' v-if='title' :style=titleStyle>{{ title }}</div>
         <div class='pie--flex' :class='{ "pie--flex--vertical": flexStyle }'>
             <div class='pie--chart'></div>
             <Legend class='pie--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
@@ -40,7 +40,8 @@ export default {
         strokeColor: VueTypes.string.def('black'),
         arcPadding: VueTypes.number.def(0),
         grouping: VueTypes.bool.def(false),
-        //colorscheme: VueTypes.array.def(d3.schemeSet1),
+        groupingThreshold: VueTypes.number.def(0),
+        colorscheme: VueTypes.array.def(d3.schemeSet1),
         titleSize: VueTypes.string.def('2em'),
         titleColor: VueTypes.string.def('black'),
         displayLegend: VueTypes.bool.def(true),
@@ -64,9 +65,8 @@ export default {
         },
         updateData() {
             this.getQuery().then(response => {
-              this.items = [];
-              this.items = response.data[0];
-              this.createSVG();
+                this.items = response.data[0];
+                this.createSVG();
             })
         },
         createSVG() {
@@ -91,6 +91,7 @@ export default {
                 this.groupItems();
             }
 
+            this.title = this.props.title || this.title;
             if (this.title) {
                 let titleSize = this.props.titleSize || this.titleSize;
                 let titleColor = this.props.titleColor || this.titleColor;
@@ -198,7 +199,7 @@ export default {
                 }
                 this.props.legendConfig.legendDataColors = this.legendData.colors;
                 this.props.legendConfig.legendDataLabels = this.legendData.labels;
-                if (this.props.legendConfig.scroll) {
+                if (this.props.legendConfig.scroll && !this.props.legendConfig.maxHeight) {
                     this.props.legendConfig.maxHeight = size + 'px';
                 }
                 this.legendReady = true;
@@ -213,11 +214,13 @@ export default {
         groupItems() {
             let value = 0;
             let label = 'Others (< ' + this.props.groupingThreshold + ')';
+            let groupingThreshold = this.props.groupingThreshold ||
+                this.groupingThreshold;
 
             for (let i = this.items.length - 1; i >= 0; i--) {
                 if (
                     parseFloat(this.items[i][this.props.valueKey]) <
-                    parseFloat(this.props.groupingThreshold)
+                    parseFloat(groupingThreshold)
                 ) {
                     value += parseFloat(this.items[i][this.props.valueKey]);
                     this.items.splice(i, 1);
@@ -232,7 +235,6 @@ export default {
     },
     mounted() {
         this.updateData();
-        this.title = this.props.title || this.title;
     },
     computed: {
         flexStyle() {
@@ -250,17 +252,20 @@ export default {
             }
 
             return false;
+        },
+        titleStyle() {
+            let titleSize = this.props.titleSize || this.titleSize;
+            let titleColor = this.props.titleColor || this.titleColor;
+
+            return {
+                'font-size': titleSize,
+                'color': titleColor
+            };
         }
     }
 }
 </script>
 <style>
-.pie {
-    padding: 20px;
-    border: 2px solid #bbb;
-    border-radius: 10px;
-}
-
 .pie--flex {
     display: flex;
     align-items: center;
