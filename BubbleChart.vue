@@ -43,6 +43,7 @@ export default {
        axisWidth: VueTypes.number,
        nameAsixX: VueTypes.string,
        nameAsixY: VueTypes.string,
+       nameRadius: VueTypes.string,
        width: VueTypes.number,
        height: VueTypes.number,
        title: VueTypes.string,
@@ -68,6 +69,8 @@ export default {
    axisWidth: VueTypes.number.def(0.5),
    nameAsixX: VueTypes.string.def("axis X"),
    nameAsixY: VueTypes.string.def("axis Y"),
+   nameRadius: VueTypes.string.def("Radius"),
+   nameCategory: VueTypes.string.def("Category"),
    width: VueTypes.number.def(900),
    height: VueTypes.number.def(600),
    backGroundSvg:VueTypes.bool.def(true),
@@ -124,7 +127,7 @@ export default {
       //return {key: d.key, value: +d.value};
     });*/
 
-     let map= d3.json("../../static/data3.json",function(error,data){
+     let map= d3.json("../../static/meteorite_landings.json",function(error,data){
           console.log(error);
         });
 
@@ -182,6 +185,8 @@ methods:{
     let axisWidth = this.props.axisWidth || this.axisWidth;
     let nameAsixX = this.props.nameAsixX || this.nameAsixX;
     let nameAsixY = this.props.nameAsixY || this.nameAsixY;
+    let nameRadius = this.props.nameRadius || this.nameRadius;
+    let nameCategory = this.props.nameCategory || this.nameCategory;
     let width = this.props.width || this.width;
     let height = this.props.height || this.height;
     let backGroundSvg = this.props.backGroundSvg || this.backGroundSvg;
@@ -217,7 +222,12 @@ methods:{
     let linearR = getScaleLinear(this.objData, r, minDiameter, maxDiameter);
     let linearX = getScaleLinear(this.objData, x, 0, w-padding.right-padding.left);
     let linearY = getScaleLinear(this.objData, y, h-padding.bottom - padding.top, 0);
-
+     console.log(d3.extent(t.objData.map(function(curr){return Number.parseInt(curr[r])})));
+      console.log(linearR(30000));
+       console.log(linearR(2000000));
+        console.log(linearR(256000));
+          console.log(linearR(100000));
+            console.log(linearR(4000000));
     // создаем набор вертикальных линий для сетки
     let svg = d3.select(this.$el).select(".bubbleChart")
       .append("svg")
@@ -357,11 +367,6 @@ methods:{
        .range([rangeMin,rangeMax]);
    }
 
-   function getScaleDate(obj, key, rangeMin, rangeMax) {
-     return d3.scaleTime()
-       .domain(d3.extent(t.objData.map(function(curr){return Number.parseInt(curr[key])})))
-       .range([rangeMin,rangeMax]);
-   }
 
    function setText(d,elem) {
      console.log("start")
@@ -379,7 +384,10 @@ methods:{
        .text(nameAsixX + " : " + d[x]);
 
      textBlock.append("div")
-       .text("Category: " + d[c]);
+       .text(nameRadius + " : " + d[r]);
+
+     textBlock.append("div")
+       .text(nameCategory + " : "  + d[c]);
 
      textBlock.append("div")
       .attr("class","close")
