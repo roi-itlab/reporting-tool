@@ -1,5 +1,6 @@
 <template>
     <div class="lineChart">
+        <div class='chart--title' v-if='title' :style=titleStyle>{{ title }}</div>
         <div class='line--flex' :class='{ "line--flex--vertical": flexStyle }'>
             <div class='line--chart'></div>
             <Legend class='line--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
@@ -21,6 +22,9 @@ export default {
             width: VueTypes.number,
             height: VueTypes.number,
             margin: VueTypes.object,
+            title: VueTypes.string,
+            titleSize: VueTypes.string,
+            titleColor: VueTypes.string,
             symbolXColor: VueTypes.string,
             symbolYColor: VueTypes.string,
             circlesRad: VueTypes.number,
@@ -60,6 +64,8 @@ export default {
         backgroundColor: VueTypes.string.def('Gainsboro'),
         width: VueTypes.number.def(800),
         height: VueTypes.number.def(300),
+        titleSize: VueTypes.string.def('2em'),
+        titleColor: VueTypes.string.def('black'),
         margin: VueTypes.object.def(() => { return { left: 50, right: 50, top: 50, bottom: 50 } }),
         symbolXColor: VueTypes.string.def('black'),
         symbolYColor: VueTypes.string.def('black'),
@@ -93,6 +99,7 @@ export default {
     },
     data: function() {
         return {
+            title: '',
             generalDataset: [],
             legendReady: false
         }
@@ -142,6 +149,15 @@ export default {
             }
 
             return false;
+        },
+        titleStyle() {
+            let titleSize = this.props.titleSize || this.titleSize;
+            let titleColor = this.props.titleColor || this.titleColor;
+
+            return {
+                'font-size': titleSize,
+                'color': titleColor
+            };
         }
     },
     methods: {
@@ -178,6 +194,8 @@ export default {
             let areaOpacity = this.props.areaOpacity || this.areaOpacity
             let dataCount = this.props.dataCount || this.dataCount
             let borderWidth = this.props.borderWidth || this.borderWidth
+
+            this.title = this.props.title || this.title
 
             let maxX = d3.max(this.generalDataset[0].map(function(d) { return d.x; }));
             let minX = d3.min(this.generalDataset[0].map(function(d) { return d.x; }));
@@ -356,8 +374,13 @@ export default {
 
             svg.selectAll('.grid > .tick > line').attr("stroke", gridColor)
 
-            this.legendReady = true;
-
+            if (this.props.legendConfig.scroll && !this.props.legendConfig.maxHeight) {
+                this.props.legendConfig.maxHeight = height + 'px';
+                this.legendReady = true;
+            }
+            else {
+                this.legendReady = true;
+            }
         }
     },
 }

@@ -5,7 +5,8 @@
             <hr>
         </div>
         <BarChart></BarChart>
-        <BubbleChart :props='bubbleConfig'></BubbleChart>
+        <StackedBarChart :props='stackedBarChartConfig'></StackedBarChart>
+        <BubbleChart :props='bubbleChartConfig'></BubbleChart>
         <LineChart :props='lineChartConfig'></LineChart>
         <PieChart :props='pieChartConfig2'></PieChart>
     </div>
@@ -13,16 +14,45 @@
 <script>
 import Legend from './components/Legend'
 import BarChart from './components/BarChart'
+import StackedBarChart from './components/StackedBarChart'
 import BubbleChart from './components/BubbleChart'
 import LineChart from './components/LineChart'
 import PieChart from './components/PieChart'
 
 export default {
     name: 'app',
-    components: { Legend, BarChart, BubbleChart, LineChart, PieChart },
+    components: {
+        Legend,
+        BarChart,
+        StackedBarChart,
+        BubbleChart,
+        LineChart,
+        PieChart
+    },
     data() {
         return {
-            bubbleConfig: {
+            stackedBarChartConfig: {
+                serverConfig: 'configs/stackedBarChartDataConfig.json',
+                labelKey: 'name',
+                valueKey: 'avg_spawns',
+                width_chart: 350,
+                height_chart: 302,
+                colorscheme: this.getColorScheme('category10'),
+                title: 'Types of population in states',
+                titleColor: '#D62728',
+                displayLegend: true,
+                legendConfig: {
+                    scroll: true,
+                    alignment: 'right',
+                    borderVis: true,
+                    borderColor: '#999',
+                    textColor: 'black',
+                    textSize: 15,
+                    padding: 15,
+                    dataSignVis: true
+                }
+            },
+            bubbleChartConfig: {
                 serverConfig: 'configs/bubbleChartDataConfig.json',
                 asixYKey: 'reclong',
                 asixXKey: 'reclat',
@@ -38,7 +68,9 @@ export default {
                 axisXTicks: 0,
                 axisWidth: 5,
                 width: 600,
-                height: 300,
+                height: 363,
+                title: 'Earth Meteorite Landings',
+                titleColor: '#9467BD',
                 colorscheme: this.getColorScheme('category10'),
                 displayLegend: true,
                 legendConfig: {
@@ -56,6 +88,8 @@ export default {
                 serverConfig: 'configs/lineChartDataConfig.json',
                 width: 300,
                 height: 200,
+                title: 'Stock Price',
+                titleColor: '#0000aa',
                 dataXPath: 'date',
                 lineVis: true,
                 dataYPath: ['samsung', 'apple', 'yandex', 'google'],
@@ -228,6 +262,12 @@ export default {
     padding: 20px;
     border: 2px solid #bbb;
     border-radius: 10px;
+}
+
+.chart--title {
+    width: 100%;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
 .title {

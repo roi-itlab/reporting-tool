@@ -1,6 +1,6 @@
 <template>
     <div class='bubble'>
-        <div class='bubble--title' v-if='title'>{{title}}</div>
+        <div class='chart--title' v-if='title' :style=titleStyle>{{ title }}</div>
         <button class="glo" @click="resetShowDiagram">ResetZoom</button>
         <div class='bubble--flex' :class='{ "bubble--flex--vertical": flexStyle }'>
             <div class="bubbleChart"> </div>
@@ -44,6 +44,8 @@ export default {
             width: VueTypes.number,
             height: VueTypes.number,
             title: VueTypes.string,
+            titleSize: VueTypes.string,
+            titleColor: VueTypes.string,
             backGroundSvg: VueTypes.bool,
             colorscheme: VueTypes.array,
             displayLegend: VueTypes.bool,
@@ -71,6 +73,8 @@ export default {
         backGroundSvg: VueTypes.bool.def(true),
         colorscheme: VueTypes.array.def(['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0', '#f0027f', '#bf5b17', '#666666']),
         displayLegend: VueTypes.bool.def(true),
+        titleSize: VueTypes.string.def('2em'),
+        titleColor: VueTypes.string.def('black'),
         legendConfig: VueTypes.object.def({})
     },
     data() {
@@ -81,7 +85,7 @@ export default {
                 currentR: this.props.radiusKey,
                 currentC: this.props.categoryKey,
             },
-            title: this.props.title,
+            title: '',
             drawsKeys: [],
             objData: [],
             legendData: {
@@ -107,6 +111,15 @@ export default {
                 }
             }
             return false;
+        },
+        titleStyle() {
+            let titleSize = this.props.titleSize || this.titleSize;
+            let titleColor = this.props.titleColor || this.titleColor;
+
+            return {
+                'font-size': titleSize,
+                'color': titleColor
+            };
         }
     },
     mounted: function() {
@@ -155,6 +168,7 @@ export default {
             let colorscheme = this.props.colorscheme || this.colorscheme;
             let displayLegend = this.props.displayLegend || this.displayLegend;
             let legendConfig = this.props.legendConfig || this.legendConfig;
+            this.title = this.props.title || this.title;
 
             const w = width;
             const h = height;
@@ -458,13 +472,6 @@ export default {
 
 .bubble .bubble--flex--vertical {
     flex-direction: column;
-}
-
-.bubble .bubble--title {
-    width: 100%;
-    font-weight: bold;
-    font-size: 24px;
-    margin-bottom: 20px;
 }
 
 .bubble .bubbleChart {
