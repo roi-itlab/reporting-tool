@@ -1,8 +1,8 @@
 <template>
     <div class='bubble'>
-        <div class='bubble--title' v-if='title'>kghkhgj</div>
+        <div class='chart--title' v-if='title' :style=titleStyle>{{ title }}</div>
+        <button class="glo" @click="resetShowDiagram">ResetZoom</button>
         <div class='bubble--flex' :class='{ "bubble--flex--vertical": flexStyle }'>
-            <!--<button class="btn" @click="showDiagram">сброс</button>-->
             <div class="bubbleChart"> </div>
             <Legend class='bubble--legend' v-if='legendReady' :props='props.legendConfig'></Legend>
         </div>
@@ -39,9 +39,14 @@ export default {
             axisXColor: VueTypes.string,
             axisYColor: VueTypes.string,
             axisWidth: VueTypes.number,
+            nameAsixX: VueTypes.string,
+            nameAsixY: VueTypes.string,
+            nameRadius: VueTypes.string,
             width: VueTypes.number,
             height: VueTypes.number,
             title: VueTypes.string,
+            titleSize: VueTypes.string,
+            titleColor: VueTypes.string,
             backGroundSvg: VueTypes.bool,
             colorscheme: VueTypes.array,
             displayLegend: VueTypes.bool,
@@ -62,11 +67,17 @@ export default {
         axisXColor: VueTypes.string.def("null"),
         axisYColor: VueTypes.string.def("null"),
         axisWidth: VueTypes.number.def(0.5),
+        nameAsixX: VueTypes.string.def("axis X"),
+        nameAsixY: VueTypes.string.def("axis Y"),
+        nameRadius: VueTypes.string.def("Radius"),
+        nameCategory: VueTypes.string.def("Category"),
         width: VueTypes.number.def(900),
         height: VueTypes.number.def(600),
         backGroundSvg: VueTypes.bool.def(true),
         colorscheme: VueTypes.array.def(['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0', '#f0027f', '#bf5b17', '#666666']),
         displayLegend: VueTypes.bool.def(true),
+        titleSize: VueTypes.string.def('2em'),
+        titleColor: VueTypes.string.def('black'),
         legendConfig: VueTypes.object.def({})
     },
     data() {
@@ -103,6 +114,15 @@ export default {
                 }
             }
             return false;
+        },
+        titleStyle() {
+            let titleSize = this.props.titleSize || this.titleSize;
+            let titleColor = this.props.titleColor || this.titleColor;
+
+            return {
+                'font-size': titleSize,
+                'color': titleColor
+            };
         }
     },
     mounted: function() {
@@ -118,6 +138,11 @@ export default {
                 this.objData = response.data[0];
                 this.showDiagram();
             })
+        },
+        resetShowDiagram() {
+            if (d3.select(this.$el).select(".bubbleChart"))
+                d3.select(this.$el).select(".bubbleChart").selectAll("svg").remove();
+            this.showDiagram();
         },
         showDiagram: function() {
             // удаление svg элемента если он сущестувует
@@ -138,16 +163,21 @@ export default {
             let axisXColor = this.props.axisXColor || this.axisXColor;
             let axisYColor = this.props.axisYColor || this.axisYColor;
             let axisWidth = this.props.axisWidth || this.axisWidth;
+            let nameAsixX = this.props.nameAsixX || this.nameAsixX;
+            let nameAsixY = this.props.nameAsixY || this.nameAsixY;
+            let nameRadius = this.props.nameRadius || this.nameRadius;
+            let nameCategory = this.props.nameCategory || this.nameCategory;
             let width = this.props.width || this.width;
             let height = this.props.height || this.height;
             let backGroundSvg = this.props.backGroundSvg || this.backGroundSvg;
             let colorscheme = this.props.colorscheme || this.colorscheme;
             let displayLegend = this.props.displayLegend || this.displayLegend;
             let legendConfig = this.props.legendConfig || this.legendConfig;
+            this.title = this.props.title || this.title;
 
-            const padding = { top: 100, right: 100, bottom: 100, left: 100 };
             const w = width;
             const h = height;
+            const padding = { top: h * 0.15, right: w * 0.12, bottom: h * 0.15, left: w * 0.12 };
 
             let t = this;
             let x = this.draw.currentX;
@@ -176,7 +206,6 @@ export default {
 
             // создаем набор вертикальных линий для сетки
             let svg = d3.select(this.$el).select(".bubbleChart")
-                //.style("position", "relative")
                 .append("svg")
                 .attr("width", w)
                 .attr("height", h)
@@ -211,16 +240,18 @@ export default {
                 .call(yAxis);
 
             svg.append("text")
-                .attr("x", padding.left - 50)
+                .attr("x", padding.left)
                 .attr("y", padding.top - 11)
                 .attr("class", "asixText")
-                .text("Ось Y");
+                .attr("text-anchor", "end")
+                .text(nameAsixY);
 
             svg.append("text")
-                .attr("x", w - padding.right + 22)
+                .attr("x", w - padding.right + 2)
                 .attr("y", h - padding.bottom + 22)
                 .attr("class", "asixText")
-                .text("Ось Х");
+                .attr("text-anchor", "start")
+                .text(nameAsixX);
 
             if (gridX) {
                 d3.select(t.$el)
@@ -281,14 +312,12 @@ export default {
                 svg.attr("transform", "translate(" + [d3.event.transform.x, d3.event.transform.y] + ")" + " scale(" + d3.event.transform.k + ")");
                 bubbleAdd.attr("r", d => linearR(d[r]) / d3.event.transform.k).style("stroke-width", circleStrokeWidth / d3.event.transform.k);
 
-                /*  .attr("transform","translate(" + [d3.event.transform.x,d3.event.transform.y] + ")" + " scale(" +d3.event.transform.k+ ")");*/
                 LineX.style("stroke-width", axisWidth / d3.event.transform.k);
                 LineY.style("stroke-width", axisWidth / d3.event.transform.k);
                 d3.select(t.$el).selectAll("g.y-axis g.tick line").style("translate", "( 0 ," + 0.5 / d3.event.transform.k + ")");
                 d3.select(t.$el).selectAll("g.tick").style("stroke-width", gridWidth / d3.event.transform.k);
                 d3.select(t.$el).selectAll("g.tick text").attr("font-size", (12 / d3.event.transform.k) + "px");
                 d3.select(t.$el).selectAll("g.tick line").style("stroke-width", gridWidth / d3.event.transform.k);
-                //d3.selectall("line").style("stroke-width",gridWidth/d3.event.transform.k);
             };
 
             if (this.displayLegend) {
@@ -331,16 +360,20 @@ export default {
                     .style('top', (d3.event.pageY + 'px'));
 
                 textBlock.append("div")
-                    .text("Ось У: " + d[y]);
+                    .text(nameAsixY + " : " + d[y]);
 
                 textBlock.append("div")
-                    .text("Ось X: " + d[x]);
+                    .text(nameAsixX + " : " + d[x]);
 
                 textBlock.append("div")
-                    .text("Категория: " + d[c]);
+                    .text(nameRadius + " : " + d[r]);
+
+                textBlock.append("div")
+                    .text(nameCategory + " : " + d[c]);
 
                 textBlock.append("div")
                     .attr("class", "close")
+                    .attr("title", "close")
                     .on("click", s => removeText());
 
                 d3.selectAll("circle")
@@ -382,8 +415,7 @@ export default {
     "fill": black;
     "stroke": black;
     "font-family": Helvetica Neue, Helvetica, Arial, san-serif;
-    "font-size": 12px;
-    "text-anchor": end;
+    "font-size": 0.8em;
 }
 
 .bubble .svgBack {
@@ -415,12 +447,12 @@ export default {
     top: 2px;
     width: 17px;
     height: 17px;
-    opacity: 0.6;
+    opacity: 1;
     z-index: 12;
 }
 
 .bubble .close:hover {
-    opacity: 1;
+    opacity: 0.6;
 }
 
 .bubble .close:before,
@@ -450,13 +482,29 @@ export default {
     flex-direction: column;
 }
 
-.bubble .bubble--title {
-    width: 100%;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
 .bubble .bubbleChart {
     vertical-align: top;
+}
+
+.bubble button.glo {
+    color: #00c6ff;
+    padding: 10px 20px;
+    width: 150px;
+    text-decoration: none;
+    text-align: center;
+    margin: 20px auto;
+    display: block;
+    background-image: linear-gradient(to left, transparent, transparent 50%, #00c6ff 50%, #00c6ff);
+    background-position: 100% 0;
+    background-size: 200% 100%;
+    transition: all .25s ease-in;
+    font: 400 18px tahoma;
+    border: 1px solid #00C6FF;
+    cursor: pointer;
+}
+
+.bubble button.glo:hover {
+    background-position: 0 0;
+    color: #fff;
 }
 </style>

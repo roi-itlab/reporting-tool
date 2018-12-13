@@ -50,7 +50,7 @@ export default {
             width_bar: VueTypes.number,
             displayLegend: VueTypes.bool,
             legendConfig: VueTypes.object,
-        }).def({}),
+        }),
 
         colorscheme: VueTypes.array.def(d3.schemeSet1),
         width_chart: VueTypes.number.def(960),

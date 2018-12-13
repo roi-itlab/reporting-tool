@@ -116,10 +116,9 @@ export default {
                         (+nodes[i].getAttribute('font-size'));
                     let y = (+nodes[i].getAttribute('m')) * (i + 1) +
                         (+nodes[i].getAttribute('font-size')) * i +
-                        (+nodes[i].getAttribute('font-size')/2);
+                        (+nodes[i].getAttribute('font-size'));
                     return "translate(" + x + ',' + y + ")";
-                })
-                .attr( 'dominant-baseline', "central");
+                });
 
             let height = dataText.length * textSize + padding *
                 (dataText.length + 1);
