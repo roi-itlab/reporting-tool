@@ -58,7 +58,8 @@ export default {
             dataYPath: VueTypes.array,
             backgroundColor: VueTypes.string,
             displayLegend: VueTypes.bool,
-            legendConfig: VueTypes.object
+            legendConfig: VueTypes.object,
+			curveType: VueTypes.string
         }).def({}),
 
         backgroundColor: VueTypes.string.def('Gainsboro'),
@@ -66,7 +67,7 @@ export default {
         height: VueTypes.number.def(300),
         titleSize: VueTypes.string.def('2em'),
         titleColor: VueTypes.string.def('black'),
-        margin: VueTypes.object.def(() => { return { left: 50, right: 50, top: 50, bottom: 50 } }),
+		margin: VueTypes.object.def(() => { return { left: 30, right: 10, top: 10, bottom: 20 } }),
         symbolXColor: VueTypes.string.def('black'),
         symbolYColor: VueTypes.string.def('black'),
         circlesRad: VueTypes.number.def(5),
@@ -96,6 +97,7 @@ export default {
         areaOpacity: VueTypes.number.def(0.5),
         dataCount: VueTypes.number.def(0),
         borderWidth: VueTypes.number.def(2),
+        curveType: VueTypes.string.def('MonotoneX')
     },
     data: function() {
         return {
@@ -117,21 +119,6 @@ export default {
             }
             this.createSvg()
         })
-
-        // setInterval(()=> {
-        //   const response = PostServices.fetchQuery(this.props.serverConfig);
-        //   this.generalDataset = []
-        //   response.then(result => {
-        //     for (let j = 0; j < this.props.dataCount; ++j) {
-        //       let temp = []
-        //       for (let d of result.data[0])
-        //         temp.push({ x: d[this.props.dataXPath], y: d[this.props.dataYPath[j]] })
-        //       this.generalDataset.push(temp)
-        //     }
-        //     d3.select(this.$el).select('.line--chart').selectAll('svg').remove();
-        //     this.createSvg();
-        //   })
-        // }, 1000);
     },
     computed: {
         flexStyle() {
@@ -194,6 +181,7 @@ export default {
             let areaOpacity = this.props.areaOpacity || this.areaOpacity
             let dataCount = this.props.dataCount || this.dataCount
             let borderWidth = this.props.borderWidth || this.borderWidth
+            let curveType = this.props.curveType || this.curveType
 
             this.title = this.props.title || this.title
 
@@ -226,115 +214,140 @@ export default {
             let xScale
             let yScale
             let line
-            let dataset = []
             let svg
             let area
+            let curve
+			switch (curveType) {
+				case 'Linear':
+					curve = d3.curveLinear
+					break
+				case 'Step':
+					curve = d3.curveStep
+					break
+				case 'StepBefore':
+					curve = d3.curveStepBefore
+					break
+				case 'StepAfter':
+					curve = d3.curveStepAfter
+					break
+				case 'Basis':
+					curve = d3.curveBasis
+					break
+				case 'Cardinal':
+					curve = d3.curveCardinal
+					break
+				case 'CatmullRom':
+					curve = d3.curveCatmullRom
+					break
+				default:
+					curve = d3.curveMonotoneX
+			}
 
             xScale = d3.scaleLinear().domain([minX, maxX]).range([0, width])
             yScale = d3.scaleLinear().domain([minY - Math.abs(minY * 0.1), maxY + Math.abs(maxY * 0.1)]).range([height, 0])
 
             //draw line
-            line = d3.line()
-                .x(function(d) {
-                    return xScale(d.x);
-                })
-                .y(function(d) {
-                    return yScale(d.y);
-                })
-                .curve(d3.curveMonotoneX)
+			line = d3.line()
+				.x(function(d) {
+					return xScale(d.x);
+				})
+				.y(function(d) {
+					return yScale(d.y);
+				})
+				.curve(curve)
 
-            //draw area
-            if (areaVis) {
-                area = d3.area()
-                    .x(function(d, i) {
-                        return xScale(d.x);
-                    })
-                    .y1(function(d) {
-                        return yScale(d.y);
-                    })
-                    .y0(height)
-                    .curve(d3.curveMonotoneX)
-            }
+			//draw area
+			if (areaVis) {
+				area = d3.area()
+					.x(function(d, i) {
+						return xScale(d.x);
+					})
+					.y1(function(d) {
+						return yScale(d.y);
+					})
+					.y0(height)
+					.curve(curve)
+			}
 
-            for (let i = 0; i < dataCount; ++i)
-                dataset.push(d3.range(21).map(function(d) { return { "y": d3.randomUniform(1)() } }))
-
-            svg = d3.select(this.$el).select('.line--chart').append('svg')
-                .attr('width', width + margin.left + margin.right)
-                .attr('height', height + margin.top + margin.bottom)
-                .append('g')
-                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+			svg = d3.select(this.$el).select('.line--chart').append('svg')
+				.attr('class', 'line--svg')
+				.attr('width', width + margin.left + margin.right)
+				.attr('height', height + margin.top + margin.bottom)
+				.append('g')
+				.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
 
-            svg.append('rect').attr('class', 'bg')
-                .attr('height', height)
-                .attr('width', width)
-                .attr('fill-opacity', 0.5)
-                .attr('fill', backgroundColor)
-                .attr("transform", () => {
-                    return "translate(" + borderWidth + "," + borderWidth + ")"
-                })
-                .attr('stroke-width', borderWidth).attr('rx', 5).attr('ry', 5)
+			svg.append('rect').attr('class', 'bg')
+				.attr('height', height)
+				.attr('width', width)
+				.attr('fill-opacity', 0.5)
+				.attr('fill', backgroundColor)
+				.attr("transform", () => {
+					return "translate(" + borderWidth + "," + borderWidth + ")"
+				})
+				.attr('stroke-width', borderWidth).attr('rx', 5).attr('ry', 5)
 
 
-            svg.append("g")
-                .attr("class", "x-axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(xScale))
+			svg.append("g")
+				.attr("class", "x-axis")
+				.attr("transform", "translate(0," + height + ")")
+				.call(d3.axisBottom(xScale))
 
-            svg.append("g")
-                .attr("class", "y-axis")
-                .call(d3.axisLeft(yScale))
+			svg.append("g")
+				.attr("class", "y-axis")
+				.call(d3.axisLeft(yScale))
 
-            //draw grid
-            if (gridVis) {
-                svg.append("g")
-                    .attr("class", "grid")
-                    .attr("transform", "translate(0," + height + ")")
-                    .call(make_x_gridlines(gridX)
-                        .tickSize(-height)
-                        .tickFormat(""))
+			//draw grid
+			if (gridVis) {
+				svg.append("g")
+					.attr("class", "grid")
+					.attr("transform", "translate(0," + height + ")")
+					.call(make_x_gridlines(gridX)
+						.tickSize(-height)
+						.tickFormat(""))
 
-                svg.append("g")
-                    .attr("class", "grid")
-                    .call(make_y_gridlines(gridY)
-                        .tickSize(-width)
-                        .tickFormat("")
-                    )
-            }
+				svg.append("g")
+					.attr("class", "grid")
+					.call(make_y_gridlines(gridY)
+						.tickSize(-width)
+						.tickFormat("")
+					)
+			}
 
-            for (let i = 0; i < dataCount; ++i) {
-                if (areaVis) {
-                    svg.append("path")
-                        .datum(this.generalDataset[i])
-                        .attr("class", "area" + i)
-                        .attr("fill", areaColor[i])
-                        .attr("opacity", areaOpacity)
-                        .attr("d", area)
-                }
-                if (lineVis) {
-                    svg.append("path")
-                        .datum(this.generalDataset[i])
-                        .attr("class", "line" + i)
-                        .attr("fill", "none")
-                        .attr("stroke-width", lineDepth)
-                        .attr("stroke", linesColor[i])
-                        .attr("d", line)
-                }
-                if (circlesVis) {
-                    svg.selectAll(".dot" + i)
-                        .data(this.generalDataset[i])
-                        .enter().append("circle")
-                        .attr("class", "dot" + i)
-                        .attr("cx", function(d, i) { return xScale(d.x) })
-                        .attr("cy", function(d) { return yScale(d.y) })
-                        .attr("r", circlesRad)
-                        .attr("fill", circlesFillColor[i])
-                        .attr("stroke", circlesStrokeColor[i])
-                        .on('mouseover', function() { this.setAttribute('r', +this.getAttribute('r') + 2) })
-                        .on('mouseout', function() { this.setAttribute('r', +this.getAttribute('r') - 2) })
-                }
-            }
+			for (let i = 0; i < dataCount; ++i) {
+				if (areaVis) {
+					svg.append("path")
+						.datum(this.generalDataset[i])
+						.attr("class", "area" + i)
+						.attr("fill", areaColor[i])
+						.attr("opacity", areaOpacity)
+						.attr("d", area)
+				}
+
+				if (lineVis) {
+					svg.append("path")
+						.attr("class", "line" + i)
+						.attr("fill", "none")
+						.attr("stroke-width", lineDepth)
+						.attr("stroke", linesColor[i])
+						.attr("d", line(this.generalDataset[i]))
+
+				}
+				if (circlesVis) {
+					svg.selectAll(".dot" + i)
+						.data(this.generalDataset[i])
+						.enter().append("circle")
+						.attr("class", "dot" + i)
+						.attr("cx", function(d, i) {
+							return xScale(d.x) })
+						.attr("cy", function(d) { return yScale(d.y) })
+						.attr("r", circlesRad)
+						.attr("fill", circlesFillColor[i])
+						.attr("stroke", circlesStrokeColor[i])
+						.on('mouseover', function() { this.setAttribute('r', +this.getAttribute('r') + 2) })
+						.on('mouseout', function() { this.setAttribute('r', +this.getAttribute('r') - 2) })
+				}
+			}
 
             svg.append('text')
                 .text('price')
@@ -381,6 +394,75 @@ export default {
             else {
                 this.legendReady = true;
             }
+
+			var inter = setInterval(()=> {
+				const response = PostServices.fetchQuery(this.props.serverConfig);
+				response.then(result => {
+					this.generalDataset = []
+					for (let j = 0; j < this.props.dataCount; ++j) {
+						let temp = []
+						for (let d of result.data[0])
+							temp.push({ x: d[this.props.dataXPath], y: d[this.props.dataYPath[j]] })
+						this.generalDataset.push(temp)
+					}
+				})
+
+				maxX = d3.max(this.generalDataset[0].map(function(d) { return d.x; }));
+				minX = d3.min(this.generalDataset[0].map(function(d) { return d.x; }));
+
+				minY = d3.min(this.generalDataset[0].map(function(d) { return d.y; }))
+				maxY = d3.max(this.generalDataset[0].map(function(d) { return d.y; }))
+				for (let i = 1; i < this.props.dataCount; ++i) {
+					let minTemp = d3.min(this.generalDataset[i].map(function(d) { return d.y; }))
+					let maxTemp = d3.max(this.generalDataset[i].map(function(d) { return d.y; }))
+
+
+					minY = minY < minTemp ? minY : minTemp
+					maxY = maxY > maxTemp ? maxY : maxTemp
+				}
+
+
+				xScale = d3.scaleLinear().domain([minX, maxX]).range([0, width])
+				yScale = d3.scaleLinear().domain([minY - Math.abs(minY * 0.1), maxY + Math.abs(maxY * 0.1)]).range([height, 0])
+
+
+				let svg2 = svg.transition();
+
+				for (let i = 0; i < dataCount; ++i) {
+
+					if (areaVis) {
+						svg2.select(".area" + i)
+							.duration(1000)
+							.attr("d", area(this.generalDataset[i]))
+					}
+
+					if (lineVis) {
+						svg2.select(".line" + i)
+							.duration(1000)
+							.attr("d", line(this.generalDataset[i]));
+
+					}
+					let k = 0;
+					let j = 0;
+					// if (circlesVis) {
+					// 	svg2.selectAll(".dot" + i)
+					// 		.duration(500)
+					//
+					// 		.attr("cx", ()=> {
+					// 			if (k >= this.generalDataset[i].length) k = 0;
+					// 			return xScale(this.generalDataset[i][k++].x) })
+					// 		.attr("cy", ()=> {
+					// 			if (j >= this.generalDataset[i].length) j = 0;
+					// 			return yScale(this.generalDataset[i][j++]) })
+					// }
+				}
+				svg2.select(".x-axis")
+					.duration(1000)
+					.call(d3.axisBottom(xScale));
+				svg2.select(".y-axis")
+					.duration(1000)
+					.call(d3.axisLeft(yScale));
+			}, 1000);
         }
     },
 }

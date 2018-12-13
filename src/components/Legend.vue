@@ -111,16 +111,18 @@ export default {
                     }
                     return nodes[i].getComputedTextLength();
                 })
-                .attr("transform", (d, i, nodes) => {
-                    let x = (+nodes[i].getAttribute('m') * 2) +
-                        (+nodes[i].getAttribute('font-size'));
-                    let y = (+nodes[i].getAttribute('m')) * (i + 1) +
-                        (+nodes[i].getAttribute('font-size')) * i +
-                        (+nodes[i].getAttribute('font-size'));
-                    return "translate(" + x + ',' + y + ")";
-                });
+				.attr("transform", (d, i, nodes) => {
+					let x = (+nodes[i].getAttribute('m') * 2) +
+						(+nodes[i].getAttribute('font-size'));
+					let y = (+nodes[i].getAttribute('m')) * (i + 1) +
+						(+nodes[i].getAttribute('font-size')) * i +
+						(+nodes[i].getAttribute('font-size')/2);
+					return "translate(" + x + ',' + y + ")";
+				})
+				.attr( 'dominant-baseline', "central");
 
-            let height = dataText.length * textSize + padding *
+
+			let height = dataText.length * textSize + padding *
                 (dataText.length + 1);
             let width = maxTextWidth + padding * 3 + textSize;
 
