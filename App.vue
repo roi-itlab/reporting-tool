@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <BubbleChart :props='bubbleConfig'> </BubbleChart>
-    <BubbleChart :props='bubbleConfig2'> </BubbleChart>
+    <!--<BubbleChart :props='bubbleConfig2'> </BubbleChart>-->
   </div>
 </template>
 
@@ -20,12 +20,12 @@ export default {
         component:'Example',
         bubbleConfig: {
           serverConfig: 'configs/pie_config_2.json',
-          asixYKey: 'SiteID',
-          asixXKey: 'ID',
-          radiusKey: 'Weight',
-          categoryKey: 'Topic',
-          maxDiameter: 15,
-          minDiameter: 5,
+          asixYKey: 'reclong',
+          asixXKey: 'reclat',
+          radiusKey: 'mass',
+          categoryKey: 'recclass',
+          maxDiameter: 50,
+          minDiameter: 0,
           maxZoom: 50,
           gridColor:"#000" ,
           gridWidth: 0.5,
@@ -33,8 +33,12 @@ export default {
           axisYTicks: 10,
           axisXTicks: null,
           axisWidth: 5,
-          width: 400,
-          height: 200,
+          nameAsixX:"reclat",
+          nameAsixY:"reclong",
+          nameRadius:"mass",
+          nameCategory:"",
+          width: 700,
+          height: 500,
           title:"bubbleChart",
           colorscheme: this.getColorScheme('category10'),
           titleColor: this.getColorScheme('category10')[1],
